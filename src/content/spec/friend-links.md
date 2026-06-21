@@ -4,9 +4,9 @@
 
 ## 我的友链
 
-| 博客名称 | 博客地址 | 描述 |
-|---------|---------|------|
-| 冯启蒙 | [fqm1149.github.io](https://fqm1149.github.io) | - |
+| 博客名称 | 博客地址 | GitHub |
+|---------|---------|--------|
+| Kimeng | [fqm1149.github.io](https://fqm1149.github.io) | [fqm1149](https://github.com/fqm1149) |
 
 ## 如何添加
 
