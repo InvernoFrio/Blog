@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>读个研先 — InvernoFrio的百宝箱</title>
+  <link rel="icon" type="image/svg+xml" href="/Blog/games/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== OItrainer 风格 + 博客深浅色支持 ===== */
+    :root {
+      --bg: #f7f7f8; --card: #ffffff; --muted: #666; --accent: #2b6cb0;
+      --text: #222; --border: #e5e7eb; --radius: 8px;
+      --navbar-bg: rgba(47,65,84,0.85); --navbar-blur: blur(8px);
+      --footer-bg: #2f4154;
+    }
+    [data-theme="dark"] {
+      --bg: #1a1a2e; --card: #16213e; --muted: #8b949e; --accent: #58a6ff;
+      --text: #c9d1d9; --border: #30363d;
+      --navbar-bg: rgba(22,33,62,0.85); --footer-bg: #161b22;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: auto; }
+    body {
+      font-family: "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px;
+      min-height: 100vh; display: flex; flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== 导航栏 ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--navbar-bg); backdrop-filter: var(--navbar-blur);
+      -webkit-backdrop-filter: var(--navbar-blur);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .navbar .container {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 56px;
+    }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #fff; }
+    .logo:hover { color: #fff; text-decoration: none; }
+    .nav-links { list-style: none; display: flex; gap: 0; }
+    .nav-links li a {
+      color: rgba(255,255,255,0.85); font-size: 0.88rem;
+      padding: 16px 16px; display: block; transition: background 0.2s;
+    }
+    .nav-links li a:hover, .nav-links li a.active {
+      background: rgba(255,255,255,0.1); color: #fff; text-decoration: none;
+    }
+    .theme-toggle {
+      background: none; border: none; color: rgba(255,255,255,0.85);
+      font-size: 1.1rem; cursor: pointer; padding: 8px 10px; border-radius: 6px;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+    .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 8px; }
+
+    /* ===== 主容器 ===== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; width: 100%; }
+
+    /* ===== OItrainer 风板 ===== */
+    .panel {
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px; margin-top: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .panel-header {
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    [data-theme="dark"] .panel, [data-theme="dark"] .panel-header { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+    /* ===== 按钮 ===== */
+    .btn {
+      background: var(--accent); color: #fff; border: none;
+      padding: 8px 14px; border-radius: 6px; cursor: pointer;
+      font-size: 14px; font-weight: 600; transition: all 0.15s;
+      display: inline-block; text-decoration: none;
+    }
+    .btn:hover { filter: brightness(1.1); transform: translateY(-1px); text-decoration: none; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); padding: 6px 12px;
+    }
+
+    /* ===== 打字机光标 ===== */
+    .typing-cursor {
+      display: inline-block; width: 3px; height: 1em; background: #fff;
+      margin-left: 4px; animation: blink 1s infinite; vertical-align: text-bottom;
+    }
+    @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+    /* ===== 菜单界面 ===== */
+    #menu-screen { min-height: 100vh; }
+    .menu-cover {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #2b6cb0 0%, #1a1a2e 100%);
+      color: #fff; padding: 20px;
+    }
+    .menu-content { max-width: 720px; text-align: center; width: 100%; }
+    .menu-title {
+      font-size: 2.8rem; font-weight: 700; margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .menu-subtitle { font-size: 1rem; color: rgba(255,255,255,0.8); margin-bottom: 28px; }
+    .diff-section { margin-bottom: 24px; }
+    .diff-section h3 { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-bottom: 12px; font-weight: 600; }
+    .diff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .diff-card {
+      background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius); padding: 14px; cursor: pointer;
+      transition: all 0.2s; text-align: center;
+    }
+    .diff-card:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); }
+    .diff-card.selected { border-color: var(--accent); background: rgba(43,108,176,0.2); }
+    .diff-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+    .diff-name { font-weight: 700; font-size: 0.95rem; display: block; }
+    .diff-desc { font-size: 0.75rem; color: rgba(255,255,255,0.5); display: block; margin-top: 2px; }
+    .menu-actions { margin-top: 8px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-start, .btn-continue {
+      padding: 10px 28px; border-radius: 6px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-start { background: #38a169; color: #fff; }
+    .btn-start:hover { background: #2f855a; }
+    .btn-continue { background: transparent; border: 2px solid rgba(255,255,255,0.25); color: #fff; }
+    .btn-continue:hover { border-color: rgba(255,255,255,0.5); }
+    .menu-footer { margin-top: 24px; }
+    .menu-footer p { font-size: 0.75rem; color: rgba(255,255,255,0.35); }
+
+    /* ===== 游戏主界面 ===== */
+    #game-screen { max-width: 1100px; margin: 0 auto; padding: 72px 16px 40px; min-width: 0; }
+    .game-header {
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 12px;
+    }
+    [data-theme="dark"] .game-header { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .semester-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .semester-icon { font-size: 1.3rem; }
+    .semester-name { font-size: 1.2rem; font-weight: 700; }
+    .semester-num { font-size: 0.8rem; color: var(--muted); }
+    .money-info { display: flex; align-items: center; gap: 4px; }
+    .money-icon { font-size: 1.1rem; }
+    .money-value {
+      font-size: 1.2rem; font-weight: 800; color: var(--accent);
+      font-family: "SF Mono", Consolas, monospace;
+    }
+
+    /* 六维属性条 */
+    .attr-bars {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    [data-theme="dark"] .attr-bars { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .attr-row { display: flex; align-items: center; gap: 6px; }
+    .attr-label { font-size: 0.78rem; font-weight: 700; width: 28px; text-align: right; flex-shrink: 0; }
+    .attr-bar-bg {
+      flex: 1; height: 8px; background: var(--bg);
+      border-radius: 4px; overflow: hidden;
+    }
+    .attr-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .attr-value {
+      font-size: 0.85rem; font-weight: 800; width: 22px; text-align: center;
+      font-family: "SF Mono", Consolas, monospace;
+    }
+
+    /* ===== OItrainer 风格事件卡片 ===== */
+    .event-cards { margin-bottom: 12px; }
+    .event-card {
+      border: 2px solid var(--accent); border-radius: var(--radius);
+      padding: 10px 12px; background: var(--card);
+      box-shadow: 0 2px 6px rgba(43,108,176,0.06);
+      margin-bottom: 8px; transition: all 0.3s ease;
+    }
+    [data-theme="dark"] .event-card { box-shadow: 0 2px 6px rgba(88,166,255,0.1); }
+    .card-info { border-color: var(--accent); }
+    .card-success { border-color: #38a169; }
+    .card-warning { border-color: #d97706; }
+    .card-danger { border-color: #e53e3e; }
+    .card-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+    .card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    /* ===== 活动选择 ===== */
+    .action-section {
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    [data-theme="dark"] .action-section { box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .action-section h3 {
+      font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; font-weight: 600;
+    }
+    .action-section h3 small { font-weight: 400; }
+    .activity-grid {
+      display: flex; flex-wrap: nowrap; gap: 8px; margin-bottom: 14px;
+      overflow-x: auto; padding-bottom: 4px;
+    }
+    .activity-grid::-webkit-scrollbar { height: 4px; }
+    .activity-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .activity-card { min-width: 110px; flex: 0 0 auto; }
+    .activity-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 8px; text-align: center;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .activity-card:hover:not(.locked) {
+      border-color: var(--accent); box-shadow: 0 4px 10px rgba(43,108,176,0.08);
+      transform: translateY(-1px);
+    }
+    [data-theme="dark"] .activity-card:hover:not(.locked) { box-shadow: 0 4px 10px rgba(88,166,255,0.12); }
+    .activity-card.selected {
+      border-color: var(--accent); border-width: 2px;
+      background: linear-gradient(135deg, rgba(43,108,176,0.06), rgba(43,108,176,0.02));
+      box-shadow: 0 4px 14px rgba(43,108,176,0.1);
+    }
+    [data-theme="dark"] .activity-card.selected {
+      background: linear-gradient(135deg, rgba(88,166,255,0.12), rgba(88,166,255,0.04));
+    }
+    .activity-card.locked { opacity: 0.35; cursor: not-allowed; }
+    .act-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+    .act-name { font-weight: 700; font-size: 0.82rem; display: block; }
+    .act-effects { font-size: 0.72rem; margin-top: 4px; }
+    .req-note { font-size: 0.68rem; color: #e53e3e; display: block; margin-top: 3px; }
+
+    .confirm-row { text-align: center; }
+    .btn-confirm {
+      padding: 10px 40px; border-radius: 6px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; border: none;
+      background: var(--accent); color: #fff; transition: all 0.15s;
+    }
+    .btn-confirm:hover:not(:disabled) { filter: brightness(1.1); }
+    .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== 回合总览 ===== */
+    .round-summary {
+      background: var(--card); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border-left: 3px solid var(--accent);
+    }
+    .round-summary h3 { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+    .summary-section { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+    .summary-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .summary-section-title { font-weight: 700; font-size: 0.82rem; margin-bottom: 6px; }
+    .change-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .change-item {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700;
+    }
+    .change-item.positive { background: rgba(56,161,105,0.12); color: #38a169; }
+    .change-item.negative { background: rgba(229,62,62,0.12); color: #e53e3e; }
+    [data-theme="dark"] .change-item.positive { background: rgba(56,161,105,0.2); }
+    [data-theme="dark"] .change-item.negative { background: rgba(229,62,62,0.2); }
+    .check-info { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .check-info .pass { color: #38a169; font-weight: 700; }
+    .check-info .fail { color: #e53e3e; font-weight: 700; }
+    .check-info .need { color: #d97706; }
+    .money-change { font-size: 0.9rem; font-weight: 800; font-family: "SF Mono",Consolas,monospace; }
+    .money-change.positive { color: #38a169; }
+    .money-change.negative { color: #e53e3e; }
+
+    /* ===== 游戏日志 ===== */
+    .log-section {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden;
+    }
+    .log-toggle {
+      padding: 10px 12px; cursor: pointer; font-weight: 600;
+      font-size: 0.82rem; color: var(--muted); user-select: none;
+    }
+    .log-toggle:hover { background: var(--bg); }
+    .log-content {
+      max-height: 260px; overflow-y: auto; padding: 0 12px 10px;
+      border-top: 1px solid var(--border);
+    }
+    .log-line {
+      font-size: 0.78rem; color: var(--muted); padding: 3px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
+    [data-theme="dark"] .log-line { border-bottom-color: rgba(255,255,255,0.03); }
+
+    /* ===== 结局界面 ===== */
+    #ending-screen { min-height: 100vh; padding: 72px 16px 40px; }
+    .ending-container { max-width: 680px; margin: 0 auto; }
+    .ending-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 28px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    .ending-badge { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-bottom: 10px; }
+    .ending-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .ending-name { font-size: 1.6rem; font-weight: 700; margin-bottom: 14px; }
+    .ending-desc { font-size: 0.95rem; color: var(--text); line-height: 1.8; margin-bottom: 20px; }
+    .ending-stats {
+      background: var(--bg); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px;
+    }
+    .ending-stats h3 { font-size: 0.82rem; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-item { text-align: center; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); display: block; }
+    .stat-value {
+      font-size: 1.3rem; font-weight: 800;
+      font-family: "SF Mono",Consolas,monospace;
+    }
+    .ending-money, .ending-semesters {
+      font-size: 0.85rem; color: var(--muted); margin-top: 10px; text-align: center;
+    }
+    .ending-log { margin-bottom: 20px; }
+    .ending-log h3 { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .log-scroll {
+      max-height: 180px; overflow-y: auto; background: var(--bg);
+      border-radius: var(--radius); padding: 10px 12px;
+    }
+    .ending-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .btn-action {
+      padding: 8px 24px; border-radius: 6px; font-size: 0.9rem;
+      font-weight: 700; cursor: pointer; border: none;
+      background: var(--accent); color: #fff; transition: all 0.15s;
+    }
+    .btn-action:hover { filter: brightness(1.1); }
+    .btn-action.btn-secondary {
+      background: transparent; border: 1px solid var(--border); color: var(--text);
+    }
+
+    /* ===== 页脚 ===== */
+    .footer {
+      background: var(--footer-bg); color: rgba(255,255,255,0.7);
+      padding: 20px 0; text-align: center; font-size: 0.82rem; margin-top: auto;
+    }
+    .footer a { color: rgba(255,255,255,0.9); }
+
+    /* ===== 响应式 ===== */
+    /* 桌面端：六维属性3列，活动按钮自动填充 */
+    /* 平板(900px)：属性2列，全宽 */
+    @media (max-width: 900px) {
+      #game-screen { max-width: 100%; }
+      .attr-bars { grid-template-columns: 1fr 1fr; }
+    }
+    /* 手机(640px)：属性1列，活动3列，头部垂直排列 */
+    @media (max-width: 640px) {
+      .diff-grid { grid-template-columns: 1fr; }
+      .menu-title { font-size: 2rem; }
+      .attr-bars { grid-template-columns: 1fr; }
+      .activity-card { min-width: 90px; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .game-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .nav-links {
+        display: none; flex-direction: column; position: absolute;
+        top: 56px; left: 0; right: 0;
+        background: var(--navbar-bg); backdrop-filter: var(--navbar-blur);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .nav-links.show { display: flex; }
+      .nav-links li a { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+      .menu-toggle { display: block; }
+    }
+    /* 小屏(400px)：活动按钮更紧凑 */
+    @media (max-width: 400px) {
+      .activity-card { min-width: 80px; }
+      .menu-title { font-size: 1.6rem; }
+    }
+  </style>
+  <link rel="alternate" type="application/rss+xml" title="InvernoFrio的博客 RSS" href="feed.xml">
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="读个研先">
+  <meta property="og:description" content="一款让人血压升高的通勤模拟器">
+  <meta property="og:url" content="http://107.172.39.144/game-grad.html">
+  <meta property="og:image" content="http://107.172.39.144/img/cover.jpg">
+  <meta property="og:site_name" content="InvernoFrio的博客">
+  <meta name="twitter:card" content="summary_large_image"></head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="/Blog/" class="logo">🌾 InvernoFrio的博客</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/Blog/">首页</a></li>
+        <li><a href="/Blog/categories/">分类</a></li>
+        <li><a href="/Blog/archive/">归档</a></li>
+        <li><a href="/Blog/">搜索</a></li>
+        <li><a href="/Blog/">标签</a></li>
+        <li><a href="/Blog/friend-links/">友链</a></li>
+        <li><a href="/Blog/toolbox/">百宝箱</a></li>
+        <li><a href="/Blog/contact/">联系</a></li>
+      </ul>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 三个 Screen -->
+  <div id="menu-screen"></div>
+  <div id="game-screen" style="display:none"></div>
+  <div id="ending-screen" style="display:none"></div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 InvernoFrio的博客 · <a href="http://107.172.39.144">主站</a></p>
+    </div>
+  </footer>
+
+<script>
+// ============================================================
+// 「读个研先」数据层 v1.0
+// ============================================================
+const SEMESTER_NAMES = ['大一上','大一下','大二上','大二下','大三上','大三下','大四上','大四下','研一上','研一下','研二上','研二下'];
+function getPhase(s) { return s < 4 ? 0 : s < 8 ? 1 : 2; }
+
+const DIFFICULTIES = {
+  1: { name:'养老模式', icon:'🌸', moneyMult:2.0, eventChance:0.10, badEnding:false, desc:'资金×2，无BE，纯看剧情' },
+  2: { name:'普通模式', icon:'📖', moneyMult:1.0, eventChance:0.30, badEnding:true,  desc:'标准体验，有压力' },
+  3: { name:'地狱模式', icon:'🔥', moneyMult:0.7, eventChance:0.50, badEnding:true,  desc:'资金×0.7，事件残酷' },
+  4: { name:'随机模式', icon:'🎲', moneyMult:1.0, eventChance:0.30, badEnding:true,  desc:'活动由系统随机分配' },
+};
+
+const ACTIVITIES = [
+  {id:'gpa',      name:'卷绩点',  icon:'📚', phase:[0],   effects:{ac:3,so:1}, req:null},
+  {id:'club',     name:'进社团',  icon:'🎭', phase:[0],   effects:{so:3,co:1}, req:null},
+  {id:'contest0', name:'竞赛入门',icon:'🏆', phase:[0],   effects:{co:3,ac:1}, req:null},
+  {id:'social0',  name:'社会实践',icon:'🤝', phase:[0],   effects:{so:2,ec:2}, req:null},
+  {id:'gym0',     name:'健身运动',icon:'💪', phase:[0],   effects:{ph:3,re:1}, req:null},
+  {id:'chill0',   name:'躺平摆烂',icon:'😴', phase:[0],   effects:{re:2,ph:-1},req:null},
+  {id:'contest1', name:'冲刺竞赛',icon:'⚔️', phase:[1],   effects:{co:4,ac:3,re:1}, req:{co:5}},
+  {id:'research1',name:'进组科研',icon:'🔬', phase:[1],   effects:{ac:5,re:2}, req:{ac:6}},
+  {id:'gpa1',     name:'卷绩点',  icon:'📚', phase:[1],   effects:{ac:2,so:2}, req:null},
+  {id:'parttime', name:'兼职赚钱',icon:'💰', phase:[1],   effects:{ec:4,so:2}, req:{so:3}},
+  {id:'intern',   name:'实习',    icon:'💼', phase:[1],   effects:{ec:3,so:3,co:1}, req:{so:5,co:4}},
+  {id:'gym1',     name:'健身运动',icon:'💪', phase:[1],   effects:{ph:3,re:2}, req:null},
+  {id:'chill1',   name:'躺平摆烂',icon:'😴', phase:[1],   effects:{re:3,ac:-2},req:null},
+  {id:'research2',name:'深度科研',icon:'🧪', phase:[2],   effects:{ac:6,re:3}, req:{ac:10}},
+  {id:'contest2', name:'高级竞赛',icon:'🏅', phase:[2],   effects:{co:5,ac:4}, req:{co:8}},
+  {id:'jobhunt',  name:'找工作',  icon:'🔍', phase:[2],   effects:{ec:5,so:3}, req:{so:6,co:5}},
+  {id:'intern2',  name:'全职实习',icon:'🏢', phase:[2],   effects:{ec:6,so:2}, req:{so:7}},
+  {id:'gym2',     name:'健身运动',icon:'💪', phase:[2],   effects:{ph:4,re:2}, req:null},
+  {id:'chill2',   name:'躺平摆烂',icon:'😴', phase:[2],   effects:{re:4,ac:-3},req:null},
+];
+function getAvailableActivities(phase) { return ACTIVITIES.filter(a=>a.phase.includes(phase)); }
+function canDoActivity(a,st) {
+  if(!a.req) return true;
+  for(const[k,v] of Object.entries(a.req)) if((st[k]||0)<v) return false;
+  return true;
+}
+
+const ECONOMY={tuition:3000,baseLiving:1500,livingPhBonus:100,parents:2000,scholarshipBase:1500,scholarshipMax:5000,contestFee:200,materialFee:500,parttimeIncome:[800,2000],internIncome:[3000,8000],researchStipend:[500,1500]};
+function calcExpenses(st){
+  let t=ECONOMY.tuition;
+  t+=ECONOMY.baseLiving+ECONOMY.baseLiving-Math.min(500,(st.ph||1)*ECONOMY.livingPhBonus);
+  t+=Math.min(1000,(st.so||1)*60);
+  return t;
+}
+function calcIncome(st,main){
+  let t=ECONOMY.parents*DIFFICULTIES[st.difficulty].moneyMult;
+  if(st.ac>=8&&st.so>=5){t+=Math.min(ECONOMY.scholarshipMax,ECONOMY.scholarshipBase+Math.floor((st.ac-8)*500));}
+  if(main==='parttime')t+=randRange(...ECONOMY.parttimeIncome);
+  if(main==='intern'||main==='intern2')t+=randRange(...ECONOMY.internIncome);
+  if((main==='research1'||main==='research2')&&st.ac>=8)t+=randRange(...ECONOMY.researchStipend);
+  if(main.startsWith('contest'))t-=ECONOMY.contestFee;
+  if(main==='gpa'||main==='gpa1'||main.startsWith('research'))t-=randRange(0,ECONOMY.materialFee);
+  return Math.floor(t);
+}
+
+const STAGE_EVENTS=[
+  {id:'final_exam',name:'期末考试',type:'common',trigger:()=>true,resolve(st){return st.ac>=5?{success:true,desc:'期末考试顺利通过！',effects:{ac:2},check:{attr:'ac',need:5,have:st.ac,name:'学术'}}:{success:false,desc:'期末考试翻车了……',effects:{ac:-1,re:-1},check:{attr:'ac',need:5,have:st.ac,name:'学术'}};}},
+  {id:'midterm',name:'期中突击',type:'common',trigger:()=>true,resolve(){return Math.random()<0.5?{success:true,desc:'期中突击成功！AC+1',effects:{ac:1},check:{type:'random',name:'运气',chance:'50%'}}:{success:false,desc:'期中突击失败。',effects:{ac:-1},check:{type:'random',name:'运气',chance:'50%'}};}},
+  {id:'group_meeting',name:'组会汇报',type:'research',trigger:(st,m)=>m.startsWith('research'),resolve(st){const total=st.ac+st.so;if(total>=12)return{success:true,desc:'组会汇报不错，导师点头了。',effects:{ac:3,so:1},check:{attr:'ac+so',need:12,have:total,name:'学术+社交'}};st.fail_count=(st.fail_count||0)+1;let d='组会汇报翻车了……';if(st.fail_count>=3)d+='（第'+st.fail_count+'次了……）';return{success:false,desc:d,effects:{so:-2},check:{attr:'ac+so',need:12,have:total,name:'学术+社交'}};}},
+  {id:'school_contest',name:'校赛突围',type:'contest',trigger:(st,m)=>m.startsWith('contest'),resolve(st){if(st.co>=6){(st.events_completed=st.events_completed||[]).push('school_contest');return{success:true,desc:'校赛突围成功！¥500奖金。',effects:{co:2},reward:500,check:{attr:'co',need:6,have:st.co,name:'编程'}};}return{success:false,desc:'校赛遗憾出局。',effects:{re:-2},check:{attr:'co',need:6,have:st.co,name:'编程'}};}},
+  {id:'province_contest',name:'省赛冲刺',type:'contest',trigger:(st,m)=>m.startsWith('contest')&&st.events_completed?.includes('school_contest')&&st.co>=10,resolve(st){if(st.co>=12){st.events_completed.push('province_contest');return{success:true,desc:'省赛二等奖！¥2000！',effects:{co:4,so:2},reward:2000,check:{attr:'co',need:12,have:st.co,name:'编程'}};}return{success:false,desc:'省赛败北。',effects:{re:-3},check:{attr:'co',need:12,have:st.co,name:'编程'}};}},
+  {id:'national_contest',name:'国赛决战',type:'contest',trigger:(st,m)=>m.startsWith('contest')&&st.events_completed?.includes('province_contest')&&st.co>=14,resolve(st){if(st.co>=16){st.events_completed.push('national_contest');return{success:true,desc:'国一！¥5000！CO+6！',effects:{co:6},reward:5000,check:{attr:'co',need:16,have:st.co,name:'编程'}};}return{success:false,desc:'国赛止步。',effects:{re:-4},check:{attr:'co',need:16,have:st.co,name:'编程'}};}},
+  {id:'literature_report',name:'文献汇报',type:'research',trigger:(st,m)=>m.startsWith('research'),resolve(st){return st.ac>=8?{success:true,desc:'文献汇报顺利。',effects:{ac:3,so:1},check:{attr:'ac',need:8,have:st.ac,name:'学术'}}:{success:false,desc:'文献汇报翻车。',effects:{so:-2},check:{attr:'ac',need:8,have:st.ac,name:'学术'}};}},
+  {id:'paper_rejected',name:'论文被拒',type:'research',trigger:(st,m)=>m.startsWith('research')&&st.ac>=12&&st.events_completed?.includes('literature_report'),resolve(){return Math.random()<0.4?{success:false,desc:'论文被拒了……',effects:{re:-4,ac:-2},check:{type:'random',name:'运气',chance:'40%被拒'}}:{success:true,desc:'审稿人大修，还有机会！',effects:{},check:{type:'random',name:'运气',chance:'40%被拒'}};}},
+  {id:'paper_accepted',name:'论文接收',type:'research',trigger:(st,m)=>m.startsWith('research')&&st.ac>=14,resolve(){return Math.random()<0.6?{success:true,desc:'论文被接收了！！AC+6, SO+4！',effects:{ac:6,so:4},paperAccepted:true,check:{type:'random',name:'运气',chance:'60%接收'}}:{success:false,desc:'论文最终被拒。',effects:{re:-3},check:{type:'random',name:'运气',chance:'60%接收'}};}},
+];
+function pickStageEvent(st,main){
+  const av=STAGE_EVENTS.filter(e=>e.trigger(st,main));if(!av.length)return null;
+  const chain=av.filter(e=>e.type!=='common'),common=av.filter(e=>e.type==='common');
+  if(chain.length&&Math.random()<0.6)return chain[Math.floor(Math.random()*chain.length)];
+  return common[Math.floor(Math.random()*common.length)]||chain[0];
+}
+
+const RANDOM_EVENTS=[
+  {id:'code_works',name:'代码跑通了',type:'positive',weight:10,desc:'代码一次就跑通了！',effects:{co:3,re:2}},
+  {id:'advisor_praise',name:'被导师夸了',type:'positive',weight:7,desc:'导师难得夸了你一句。',effects:{re:4,ac:2}},
+  {id:'senior_help',name:'被师兄/师姐带飞',type:'positive',weight:8,desc:'师兄/师姐分享了科研经验。',effects:{ac:3,so:2}},
+  {id:'free_lecture',name:'蹭到大佬报告',type:'positive',weight:6,desc:'蹭了一场学术报告。',effects:{ac:4}},
+  {id:'secondhand',name:'二手群捡漏',type:'positive',weight:5,desc:'低价淘到了好东西。',effects:{ec:2}},
+  {id:'inspiration',name:'论文灵感',type:'positive',weight:7,desc:'洗澡时有了灵感！AC+5！',effects:{ac:5}},
+  {id:'keyboard_ace',name:'键盘侠觉醒',type:'positive',weight:8,desc:'顿悟了编程本质！CO+4！',effects:{co:4}},
+  {id:'new_dish',name:'食堂出新菜',type:'positive',weight:5,desc:'好吃但贵了点。',effects:{ph:2,ec:-1}},
+  {id:'bonus_income',name:'意外收入',type:'positive',weight:8,desc:'意外之财！¥1000！',effects:{},reward:1000},
+  {id:'advisor_push',name:'导师push',type:'neutral',weight:15,desc:'导师安排了一堆任务……',effects:{re:-3,ac:1}},
+  {id:'stood_up',name:'被鸽了',type:'neutral',weight:10,desc:'合作泡汤了。',effects:{so:-3,re:-2}},
+  {id:'fail_warning',name:'挂科警告',type:'neutral',weight:12,desc:'收到了挂科警告……',cond:s=>s.ac<8,effects:{ac:-3,re:-4}},
+  {id:'got_partner',name:'脱单了',type:'neutral',weight:5,desc:'你脱单了！钱包缩水了。',effects:{re:4,ec:-2}},
+  {id:'broke_up',name:'分手了',type:'neutral',weight:5,desc:'分手了……化悲痛为力量。',effects:{re:-5,ph:-2},bonusNext:1.5},
+  {id:'allnighter',name:'通宵赶ddl',type:'neutral',weight:12,desc:'ddl是第一生产力。',effects:{ph:-3,ac:1}},
+  {id:'pc_broken',name:'电脑坏了',type:'neutral',weight:10,desc:'维修花了¥2000。',effects:{},cost:2000},
+  {id:'sick',name:'生病住院',type:'neutral',weight:15,desc:'住院花了¥1500。',cond:s=>s.ph<6,effects:{ph:-3,re:-2},cost:1500},
+  {id:'power_outage',name:'宿舍停水停电',type:'neutral',weight:8,desc:'人间疾苦。',effects:{re:-2,ph:-1}},
+  {id:'ai_threat',name:'AI抢饭碗',type:'neutral',weight:8,desc:'AI又进化了。',cond:s=>s.co>=10,effectsPositive:{co:3},effectsNegative:{re:-3}},
+  {id:'code_fails',name:'代码跑不通',type:'neutral',weight:10,desc:'debug了一整天。',effects:{co:-1,re:-3}},
+  {id:'overwork_death',name:'熬夜猝死风险',type:'lethal',weight:10,desc:'心脏发出了警告……',cond:s=>s.ph<5,ending:'overwork'},
+  {id:'mental_breakdown',name:'精神崩溃',type:'lethal',weight:10,desc:'精神到了崩溃边缘。',cond:s=>s.re<4,ending:'mental'},
+];
+function rollRandomEvent(st){
+  const d=DIFFICULTIES[st.difficulty];if(Math.random()>d.eventChance)return null;
+  let pool=d.badEnding?RANDOM_EVENTS:RANDOM_EVENTS.filter(e=>e.type==='positive');
+  pool=pool.filter(e=>!e.cond||e.cond(st));if(!pool.length)return null;
+  const tw=pool.reduce((s,e)=>s+e.weight,0);let r=Math.random()*tw;
+  for(const e of pool){r-=e.weight;if(r<=0)return e;}return pool[pool.length-1];
+}
+
+const ENDINGS={
+  academic_star:{name:'学术新星',icon:'⭐',type:'good',desc:'你在研二发出了人生第一篇顶刊，导师激动得请全组吃了顿海底捞。你拿到了直博offer，前途一片光明。'},
+  national_award:{name:'国奖大佬',icon:'🏅',type:'good',desc:'国奖拿到手软，大厂抢着要。"国家奖学金"是最闪亮的一行。'},
+  hexagon:{name:'六边形战士',icon:'💪',type:'good',desc:'学术、社交、身体、编程、经济、心理全面发展，你是真正的人生赢家。'},
+  graduate:{name:'顺利毕业',icon:'🎓',type:'good',desc:'读了个研，没死，挺好的。虽然没什么惊天动地的成就，但你活下来了。'},
+  civil_servant:{name:'考公上岸',icon:'📋',type:'mid',desc:'宇宙的尽头是编制。你成功上岸，从此过上了朝九晚五的幸福生活。'},
+  abroad:{name:'润了',icon:'✈️',type:'mid',desc:'再见了妈妈今晚我就要远航。你拿到了海外offer。'},
+  inherit:{name:'继承家业',icon:'🏠',type:'mid',desc:'我也不想的，但是它给的太多了。'},
+  overwork:{name:'英年早逝',icon:'💀',type:'bad',desc:'熬夜熬没了，享年22岁。你还保持着写代码的姿势。'},
+  mental:{name:'退学跑路',icon:'🚪',type:'bad',desc:'这个研我不读了！你头也不回地离开了校园。'},
+  delayed:{name:'延毕大师',icon:'📅',type:'bad',desc:'再给我一年，我一定能毕业。（并不会）'},
+  bankrupt:{name:'破产跑路',icon:'💸',type:'bad',desc:'学费交不起了，回家种地。'},
+  advisor_kick:{name:'导师劝退',icon:'👋',type:'bad',desc:'"你可能不适合科研。"温柔的刀。'},
+};
+function checkBadEnding(st){
+  if(!DIFFICULTIES[st.difficulty].badEnding)return null;
+  if(st.money<=0)return ENDINGS.bankrupt;
+  if(st.fail_count>=3)return ENDINGS.advisor_kick;
+  if(st.ending&&ENDINGS[st.ending])return ENDINGS[st.ending];
+  return null;
+}
+function checkGoodEnding(st){
+  if(st.ac>=16&&st.paperAccepted)return ENDINGS.academic_star;
+  if(st.co>=16&&st.events_completed?.includes('national_contest'))return ENDINGS.national_award;
+  if(st.ac>=10&&st.so>=10&&st.ph>=10&&st.co>=10&&st.ec>=10&&st.re>=10)return ENDINGS.hexagon;
+  if(st.so>=12&&st.ec>=8)return ENDINGS.civil_servant;
+  if(st.ec>=14&&st.so>=10)return ENDINGS.abroad;
+  if(st.ec>=18)return ENDINGS.inherit;
+  if(st.ac<8)return ENDINGS.delayed;
+  return ENDINGS.graduate;
+}
+function randRange(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+
+// ============================================================
+// 引擎层 v1.0
+// ============================================================
+function createNewState(diff){
+  return{difficulty:diff,semester:0,money:Math.floor(5000*DIFFICULTIES[diff].moneyMult),
+    ac:1,so:1,ph:1,co:1,ec:1,re:1,events_completed:[],fail_count:0,paperAccepted:false,
+    ending:null,log:[],eventCards:[],lastActivityResult:null,bonusNextMult:1.0,totalSemesters:12};
+}
+let gameState=null;
+function addLog(t){if(!gameState)return;gameState.log.push({semester:gameState.semester,text:t});}
+function changeAttr(a,d){if(!gameState)return;gameState[a]=clamp((gameState[a]||0)+d,0,20);}
+function applyEffects(ef,m){if(!ef)return;for(const[k,v] of Object.entries(ef))changeAttr(attr=k,Math.round(v*(m||1)));}
+function pushEventCard(t,d,tp){if(!gameState)return;gameState.eventCards.push({id:Date.now()+Math.random(),title:t,description:d,type:tp||'info'});}
+function clearEventCards(){if(!gameState)return;gameState.eventCards=[];}
+
+function settleEconomy(main){
+  const st=gameState,exp=calcExpenses(st),inc=calcIncome(st,main),net=inc-exp;
+  st.money+=net;
+  addLog(`经济：收入¥${inc} 支出¥${exp} 净${net>=0?'+':''}¥${net} 余额¥${st.money}`);
+  return{net,income:inc,expenses:exp};
+}
+function settleActivity(main,sub){
+  const st=gameState,res=[];
+  const ma=ACTIVITIES.find(a=>a.id===main);
+  if(ma){const m=st.bonusNextMult;applyEffects(ma.effects,m);res.push({name:ma.name,effects:ma.effects});addLog(`主活动：${ma.name}`);st.bonusNextMult=1.0;}
+  if(sub&&sub!=='none'){const sa=ACTIVITIES.find(a=>a.id===sub);if(sa){const se={};for(const[k,v] of Object.entries(sa.effects))se[k]=Math.ceil(v/2);applyEffects(se);res.push({name:sa.name+'（辅）',effects:se});addLog(`辅活动：${sa.name}`);}}
+  return res;
+}
+function settleStageEvent(main){
+  const st=gameState,ev=pickStageEvent(st,main);if(!ev)return null;
+  const r=ev.resolve(st),emoji=r.success?'✅':'❌';
+  pushEventCard(`${emoji} ${ev.name}`,r.desc,r.success?'success':'warning');
+  applyEffects(r.effects);
+  if(r.reward){st.money+=r.reward;addLog(`${ev.name}：奖金¥${r.reward}`);}
+  if(r.paperAccepted)st.paperAccepted=true;
+  addLog(`阶段事件：${ev.name} - ${r.success?'成功':'失败'}`);
+  return{event:ev,result:r};
+}
+function settleRandomEvent(){
+  const st=gameState,ev=rollRandomEvent(st);if(!ev)return null;
+  if(ev.id==='ai_threat'){
+    if(st.co>=10){pushEventCard(`🎲 ${ev.name}`,ev.desc+'（学到了新东西）','success');applyEffects(ev.effectsPositive);}
+    else{pushEventCard(`🎲 ${ev.name}`,ev.desc+'（竞争力不够）','warning');applyEffects(ev.effectsNegative);}
+    return{event:ev};
+  }
+  if(ev.type==='lethal'){pushEventCard(`💀 ${ev.name}`,ev.desc,'danger');st.ending=ev.ending;return{event:ev,lethal:true};}
+  const tp=ev.type==='positive'?'success':'warning';
+  pushEventCard(`🎲 ${ev.name}`,ev.desc,tp);applyEffects(ev.effects);
+  if(ev.cost){st.money-=ev.cost;addLog(`${ev.name}：支出¥${ev.cost}`);}
+  if(ev.reward){st.money+=ev.reward;addLog(`${ev.name}：获得¥${ev.reward}`);}
+  if(ev.bonusNext){st.bonusNextMult=ev.bonusNext;addLog(`${ev.name}：下次活动×${ev.bonusNext}`);}
+  return{event:ev};
+}
+
+function advanceSemester(mainAct,subAct){
+  const st=gameState;if(!st||st.ending)return null;
+  const phase=getPhase(st.semester),sn=SEMESTER_NAMES[st.semester];
+  clearEventCards();addLog(`===== ${sn} =====`);
+  if(st.difficulty===4){const av=getAvailableActivities(phase).filter(a=>canDoActivity(a,st));if(av.length){const r=av[Math.floor(Math.random()*av.length)];mainAct=r.id;pushEventCard('🎲 随机模式',`本学期：${r.name}`,'info');}}
+  const ar=settleActivity(mainAct,subAct),er=settleEconomy(mainAct),sr=settleStageEvent(mainAct),rr=settleRandomEvent();
+  const be=checkBadEnding(st);
+  if(be)return{semester:st.semester,semesterName:sn,phase,activityResults:ar,economyResult:er,stageResult:sr,randomResult:rr,ending:be,gameOver:true};
+  st.semester++;
+  let ending=null,gameOver=false;
+  if(st.semester>=st.totalSemesters){ending=checkGoodEnding(st);gameOver=true;st.ending=Object.keys(ENDINGS).find(k=>ENDINGS[k]===ending)||'graduate';}
+  saveGame();
+  return{semester:st.semester-1,semesterName:sn,phase,activityResults:ar,economyResult:er,stageResult:sr,randomResult:rr,ending,gameOver};
+}
+
+function saveGame(){if(!gameState)return;try{localStorage.setItem('grad-sim-save',JSON.stringify(gameState));}catch(e){}}
+function loadGame(){try{const d=localStorage.getItem('grad-sim-save');if(d){gameState=JSON.parse(d);return true;}}catch(e){}return false;}
+function deleteSave(){localStorage.removeItem('grad-sim-save');}
+function hasSave(){return localStorage.getItem('grad-sim-save')!==null;}
+function startNewGame(diff){gameState=createNewState(diff);clearEventCards();pushEventCard('🎓 新的开始','你拖着行李箱走进了大学校园，一切都那么新鲜。大一上学期开始了！','info');addLog('===== 游戏开始 =====');addLog(`难度：${DIFFICULTIES[diff].name}`);saveGame();return gameState;}
+function continueGame(){if(loadGame())return gameState;return null;}
+function getCurrentActivities(){if(!gameState)return[];const ph=getPhase(gameState.semester);return getAvailableActivities(ph).map(a=>({...a,available:canDoActivity(a,gameState),reqText:a.req?Object.entries(a.req).map(([k,v])=>{const n={ac:'学术',so:'社交',ph:'身体',co:'编程',ec:'经济',re:'心理'};return`${n[k]||k}≥${v}`;}).join(', '):null}));}
+function getStateSummary(){if(!gameState)return null;return{...gameState,semesterName:SEMESTER_NAMES[gameState.semester],phase:getPhase(gameState.semester),progress:(gameState.semester/gameState.totalSemesters*100).toFixed(0)};}
+
+// ============================================================
+// UI层 v1.0
+// ============================================================
+const ATTR_COLORS={ac:'#3498db',so:'#e67e22',ph:'#2ecc71',co:'#9b59b6',ec:'#f1c40f',re:'#e74c3c'};
+const ATTR_NAMES={ac:'学术',so:'社交',ph:'身体',co:'编程',ec:'经济',re:'心理'};
+let selectedMain=null,selectedSub=null,lastRoundResult=null;
+
+function showScreen(n){
+  document.getElementById('menu-screen').style.display=n==='menu'?'':'none';
+  document.getElementById('game-screen').style.display=n==='game'?'':'none';
+  document.getElementById('ending-screen').style.display=n==='ending'?'':'none';
+  window.scrollTo(0,0);
+}
+
+// --- 菜单 ---
+function renderMenuScreen(){
+  const s=document.getElementById('menu-screen');
+  s.innerHTML=`<div class="menu-cover"><div class="menu-content">
+    <h1 class="menu-title" id="menuTitle"></h1>
+    <p class="menu-subtitle">从大一到研二，你的每个选择都是命运</p>
+    <div class="diff-section"><h3>选择难度</h3><div class="diff-grid" id="diffGrid">
+      ${Object.entries(DIFFICULTIES).map(([k,d])=>`<div class="diff-card ${k==2?'selected':''}" data-diff="${k}"><span class="diff-icon">${d.icon}</span><span class="diff-name">${d.name}</span><span class="diff-desc">${d.desc}</span></div>`).join('')}
+    </div></div>
+    <div class="menu-actions">
+      <button class="btn-start" onclick="onStartGame()">开始游戏 →</button>
+      ${hasSave()?'<button class="btn-continue" onclick="onContinueGame()">继续游戏 →</button>':''}
+    </div>
+    <div class="menu-footer"><p>从大一到研二，你的每个选择都是命运</p></div>
+  </div></div>`;
+  let sd=2;
+  s.querySelectorAll('.diff-card').forEach(c=>{c.addEventListener('click',()=>{s.querySelectorAll('.diff-card').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');sd=parseInt(c.dataset.diff);});});
+  s._getDiff=()=>sd;
+  setTimeout(()=>{const t='读个研先',el=document.getElementById('menuTitle');if(!el)return;let i=0;(function tp(){if(i<t.length){el.innerHTML=t.substring(0,i+1)+'<span class="typing-cursor"></span>';i++;setTimeout(tp,150);}else el.innerHTML=t;})();},300);
+}
+function onStartGame(){const d=document.getElementById('menu-screen')._getDiff?document.getElementById('menu-screen')._getDiff():2;startNewGame(d);showScreen('game');renderGameScreen();}
+function onContinueGame(){if(continueGame()){showScreen('game');renderGameScreen();}else alert('存档读取失败。');}
+
+// --- 游戏界面 ---
+function formatEffects(ef){return Object.entries(ef).map(([k,v])=>{const c=v>0?'#27ae60':'#e74c3c';return`<span style="color:${c}">${ATTR_NAMES[k]}${v>0?'+':''}${v}</span>`;}).join(' ');}
+function renderEventCard(c){const tc={info:'card-info',success:'card-success',warning:'card-warning',danger:'card-danger'}[c.type]||'card-info';return`<div class="event-card ${tc}"><div class="card-title">${c.title}</div><div class="card-desc">${c.description}</div></div>`;}
+
+// 渲染回合总览
+function renderRoundSummary(result){
+  if(!result)return'';
+  const lines=[];
+  // 1. 能力变化
+  const attrChanges={};
+  if(result.activityResults){
+    result.activityResults.forEach(ar=>{
+      if(ar.effects)for(const[k,v] of Object.entries(ar.effects))attrChanges[k]=(attrChanges[k]||0)+v;
+    });
+  }
+  if(result.stageResult&&result.stageResult.result){
+    const ef=result.stageResult.result.effects||{};
+    for(const[k,v] of Object.entries(ef))attrChanges[k]=(attrChanges[k]||0)+v;
+  }
+  if(result.randomResult&&result.randomResult.event){
+    const ev=result.randomResult.event;
+    if(ev.effects)for(const[k,v] of Object.entries(ev.effects))attrChanges[k]=(attrChanges[k]||0)+v;
+    if(ev.effectsPositive&&gameState.co>=10)for(const[k,v] of Object.entries(ev.effectsPositive))attrChanges[k]=(attrChanges[k]||0)+v;
+    if(ev.effectsNegative&&gameState.co<10)for(const[k,v] of Object.entries(ev.effectsNegative))attrChanges[k]=(attrChanges[k]||0)+v;
+  }
+  const hasAttrChanges=Object.keys(attrChanges).length>0;
+  let changeHTML='';
+  if(hasAttrChanges){
+    const items=Object.entries(attrChanges).filter(([_,v])=>v!==0).map(([k,v])=>{
+      const cls=v>0?'positive':'negative';
+      const sign=v>0?'+':'';
+      return`<span class="change-item ${cls}">${ATTR_NAMES[k]} ${sign}${v}</span>`;
+    }).join('');
+    if(items)changeHTML+=`<div class="summary-section"><div class="summary-section-title">📊 能力变化</div><div class="change-list">${items}</div></div>`;
+  }
+  // 2. 经济变化
+  if(result.economyResult){
+    const er=result.economyResult;
+    const cls=er.net>=0?'positive':'negative';
+    const sign=er.net>=0?'+':'';
+    changeHTML+=`<div class="summary-section"><div class="summary-section-title">💰 经济结算</div><span class="money-change ${cls}">${sign}¥${er.net}</span> <span style="font-size:0.82rem;color:var(--text-secondary)">（收入¥${er.income} - 支出¥${er.expenses}）</span></div>`;
+  }
+  // 3. 阶段事件检定
+  if(result.stageResult&&result.stageResult.result){
+    const sr=result.stageResult.result;
+    const check=sr.check;
+    let checkHTML='';
+    if(check){
+      if(check.type==='random'){
+        checkHTML=`<span class="check-info">🎲 ${check.name}检定：${check.chance}</span>`;
+      } else {
+        const passed=check.have>=check.need;
+        const cls=passed?'pass':'fail';
+        checkHTML=`<span class="check-info">${check.name}检定：需要 <span class="need">${check.need}</span>，当前 <span class="${cls}">${check.have}</span> → <span class="${cls}">${passed?'✅ 成功':'❌ 失败'}</span></span>`;
+      }
+    }
+    changeHTML+=`<div class="summary-section"><div class="summary-section-title">📋 阶段事件：${result.stageResult.event.name}</div>${checkHTML}</div>`;
+  }
+  // 4. 突发事件
+  if(result.randomResult&&result.randomResult.event){
+    const ev=result.randomResult.event;
+    changeHTML+=`<div class="summary-section"><div class="summary-section-title">🎲 突发事件：${ev.name}</div><span class="check-info">${ev.desc}</span></div>`;
+  }
+  if(!changeHTML)return'';
+  return`<div class="round-summary"><h3>📋 本回合总览</h3>${changeHTML}</div>`;
+}
+
+function renderGameScreen(){
+  const st=getStateSummary();if(!st)return;selectedMain=null;selectedSub=null;
+  const s=document.getElementById('game-screen');
+  s.innerHTML=`
+    <div class="game-header"><div class="semester-info"><span class="semester-icon">🎓</span><span class="semester-name">${st.semesterName}</span><span class="semester-num">第${st.semester+1}学期 / ${st.totalSemesters}</span></div><div class="money-info"><span class="money-icon">💰</span><span class="money-value" id="moneyDisplay">¥${st.money}</span></div></div>
+    <div class="attr-bars">${['ac','so','ph','co','ec','re'].map(k=>`<div class="attr-row"><span class="attr-label" style="color:${ATTR_COLORS[k]}">${ATTR_NAMES[k]}</span><div class="attr-bar-bg"><div class="attr-bar-fill" id="bar-${k}" style="width:${st[k]/20*100}%;background:${ATTR_COLORS[k]}"></div></div><span class="attr-value" id="val-${k}">${st[k]}</span></div>`).join('')}</div>
+    <div class="event-cards" id="eventCards">${renderRoundSummary(lastRoundResult)}${st.eventCards.map(c=>renderEventCard(c)).join('')}</div>
+    <div class="action-section"><h3>本学期安排 <small>（点击选择）</small></h3><div class="activity-grid" id="mainGrid"></div><h3>辅助活动 <small>（效果减半，可不选）</small></h3><div class="activity-grid" id="subGrid"></div><div class="confirm-row"><button class="btn-confirm" id="btnConfirm" onclick="onConfirmSemester()" disabled>确认选择 →</button></div></div>
+    <div class="log-section"><div class="log-toggle" onclick="toggleLog()"><span id="logArrow">▶</span> 游戏日志</div><div class="log-content" id="logContent" style="display:none">${st.log.map(l=>`<div class="log-line">${l.text}</div>`).join('')}</div></div>`;
+  renderActivityGrids(st);
+  // 卡片动画
+  document.querySelectorAll('.event-card').forEach((c,i)=>{c.style.opacity='0';c.style.transform='translateY(-20px)';setTimeout(()=>{c.style.transition='opacity 0.4s ease, transform 0.4s ease';c.style.opacity='1';c.style.transform='translateY(0)';},200+i*150);});
+}
+
+function renderActivityGrids(st){
+  const acts=getCurrentActivities();
+  document.getElementById('mainGrid').innerHTML=acts.map(a=>{const dis=!a.available,rn=dis&&a.reqText?`<span class="req-note">需${a.reqText}</span>`:'';return`<div class="activity-card ${dis?'locked':''}" data-id="${a.id}" data-type="main" ${dis?'':`onclick="selectActivity(this,'main')"`}><span class="act-icon">${a.icon}</span><span class="act-name">${a.name}</span><div class="act-effects">${formatEffects(a.effects)}</div>${rn}</div>`;}).join('');
+  const sg=document.getElementById('subGrid');
+  sg.innerHTML=`<div class="activity-card selected" data-id="none" data-type="sub" onclick="selectActivity(this,'sub')"><span class="act-icon">➖</span><span class="act-name">不选</span></div>`+acts.map(a=>{const dis=!a.available;return`<div class="activity-card ${dis?'locked':''}" data-id="${a.id}" data-type="sub" ${dis?'':`onclick="selectActivity(this,'sub')"`}><span class="act-icon">${a.icon}</span><span class="act-name">${a.name}</span><div class="act-effects">${formatEffects(a.effects)}</div></div>`;}).join('');
+  selectedSub='none';
+}
+
+function selectActivity(el,type){
+  const id=el.dataset.id,gid=type==='main'?'#mainGrid':'#subGrid';
+  document.querySelectorAll(`${gid} .activity-card`).forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  if(type==='main')selectedMain=id;else selectedSub=id;
+  const btn=document.getElementById('btnConfirm');if(btn)btn.disabled=!selectedMain;
+}
+
+function onConfirmSemester(){
+  if(!selectedMain)return;
+  const btn=document.getElementById('btnConfirm');btn.disabled=true;btn.textContent='结算中...';
+  const result=advanceSemester(selectedMain,selectedSub);
+  if(!result){btn.disabled=false;btn.textContent='确认选择 →';return;}
+  lastRoundResult=result;
+  setTimeout(()=>{if(result.gameOver){showScreen('ending');renderEndingScreen(result.ending);}else{renderGameScreen();const ec=document.getElementById('eventCards');if(ec)ec.scrollIntoView({behavior:'smooth',block:'start'});}},800);
+}
+
+function toggleLog(){const c=document.getElementById('logContent'),a=document.getElementById('logArrow');if(c.style.display==='none'){c.style.display='block';a.textContent='▼';c.scrollTop=c.scrollHeight;}else{c.style.display='none';a.textContent='▶';}}
+
+// --- 结局界面 ---
+function renderEndingScreen(ending){
+  const s=document.getElementById('ending-screen'),st=gameState;if(!ending)ending=ENDINGS[st.ending]||ENDINGS.graduate;
+  const ts={good:{border:'#27ae60',bg:'rgba(39,174,96,0.08)',badge:'🏆 好结局'},mid:{border:'#f39c12',bg:'rgba(243,156,18,0.08)',badge:'😐 中等结局'},bad:{border:'#e74c3c',bg:'rgba(231,76,60,0.08)',badge:'💀 坏结局'}}[ending.type]||{border:'#f39c12',bg:'rgba(243,156,18,0.08)',badge:'😐 中等结局'};
+  s.innerHTML=`<div class="ending-container"><div class="ending-card" style="border-top:4px solid ${ts.border};background:${ts.bg};opacity:0;transform:translateY(20px);">
+    <div class="ending-badge">${ts.badge}</div><div class="ending-icon">${ending.icon||'🎓'}</div>
+    <h1 class="ending-name">「${ending.name}」</h1><p class="ending-desc">${ending.desc}</p>
+    <div class="ending-stats"><h3>最终属性</h3><div class="stats-grid">${['学术','社交','身体','编程','经济','心理'].map((n,i)=>{const k=['ac','so','ph','co','ec','re'][i];return`<div class="stat-item"><span class="stat-label">${n}</span><span class="stat-value">${st[k]}</span></div>`;}).join('')}</div><div class="ending-money">余额：¥${st.money}</div><div class="ending-semesters">共经历了 ${st.semester} 个学期</div></div>
+    <div class="ending-log"><h3>游戏日志</h3><div class="log-scroll">${st.log.slice(-20).map(l=>`<div class="log-line">${l.text}</div>`).join('')}</div></div>
+    <div class="ending-actions"><button class="btn-action" onclick="onRestartGame()">再来一次</button><button class="btn-action btn-secondary" onclick="window.location.href='toolbox.html'">返回百宝箱</button></div>
+  </div></div>`;
+  setTimeout(()=>{const c=s.querySelector('.ending-card');if(c){c.style.transition='opacity 0.8s ease, transform 0.8s ease';c.style.opacity='1';c.style.transform='translateY(0)';}},100);
+}
+function onRestartGame(){deleteSave();showScreen('menu');renderMenuScreen();}
+
+// ============================================================
+// 初始化
+// ============================================================
+(function init(){
+  // 主题
+  const tt=document.getElementById('themeToggle'),html=document.documentElement;
+  const saved=localStorage.getItem('theme')||'light';
+  html.setAttribute('data-theme',saved);tt.textContent=saved==='dark'?'☀️':'🌙';
+  tt.addEventListener('click',()=>{const c=html.getAttribute('data-theme'),n=c==='dark'?'light':'dark';html.setAttribute('data-theme',n);localStorage.setItem('theme',n);tt.textContent=n==='dark'?'☀️':'🌙';});
+  // 移动端菜单
+  document.getElementById('menuToggle').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('show');});
+  // 导航栏阴影
+  window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);},{passive:true});
+  // 渲染菜单
+  renderMenuScreen();
+})();
+</script>
+  <script src="/Blog/games/common.js"></script>
+</body>
+</html>
