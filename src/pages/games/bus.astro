@@ -1,0 +1,329 @@
+---
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="等公交模拟器" description="一款让人血压升高的通勤模拟器">
+  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative">
+    <div class="card-base z-10 px-6 sm:px-9 py-6 relative w-full max-w-2xl mx-auto">
+
+      <!-- 场景 -->
+      <div id="sceneTop" class="relative rounded-xl overflow-hidden mb-5 transition-colors duration-700 bg-gradient-to-br from-[#4a90d9] to-[#67b8e3] dark:from-[#2c3e50] dark:to-[#34495e] p-6 sm:p-8 text-center min-h-[180px]">
+        <div id="rainDrops" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+        <span id="weatherIcon" class="absolute top-3 right-4 text-2xl opacity-70">☀️</span>
+        <div class="text-3xl mb-1">🚏</div>
+        <div id="stopName" class="text-white text-lg font-semibold" style="text-shadow:0 1px 4px rgba(0,0,0,0.3)">西门站</div>
+        <div id="busEta" class="text-white text-3xl font-bold mt-2 mb-0.5" style="text-shadow:0 2px 8px rgba(0,0,0,0.2)">2:30</div>
+        <div class="text-white/80 text-xs">后到达</div>
+      </div>
+
+      <!-- 道路动画 -->
+      <div class="relative h-10 bg-[#555] dark:bg-[#333] overflow-hidden -mx-6 sm:-mx-9 mb-0">
+        <div class="absolute inset-x-0 top-1/2 h-0.5 opacity-50" style="background:repeating-linear-gradient(90deg,#fff 0,#fff 20px,transparent 20px,transparent 40px);animation:roadScroll 1s linear infinite"></div>
+        <div id="busOnRoad" class="absolute top-1/2 -translate-y-1/2 text-2xl transition-[left] duration-[2s] linear" style="left:-50px">🚌</div>
+      </div>
+
+      <!-- 状态文字 -->
+      <div class="text-center py-4">
+        <div id="busStatus" class="text-sm text-black/60 dark:text-white/60">公交即将到达，请耐心等待...</div>
+      </div>
+
+      <!-- 耐心值 -->
+      <div class="bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10 p-4 mb-5">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-black/80 dark:text-white/80">😤 耐心值</span>
+          <span id="patienceEmoji" class="text-xl">😊</span>
+        </div>
+        <div class="h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+          <div id="patienceBar" class="h-full rounded-full transition-[width] duration-500" style="width:80%;background:linear-gradient(90deg,#e74c3c,#f39c12,#2ecc71)"></div>
+        </div>
+        <div id="patienceTip" class="text-xs text-black/50 dark:text-white/50 mt-2 text-center">状态良好，再等等也没关系</div>
+      </div>
+
+      <!-- 事件区域 -->
+      <div id="eventArea" class="mb-5"></div>
+
+      <!-- 操作按钮 -->
+      <div class="grid grid-cols-2 gap-2.5 mb-5">
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('phone')">
+          <span class="text-2xl block mb-1.5">📱</span>
+          <span class="text-xs text-black/70 dark:text-white/70">看手机</span>
+        </button>
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('look')">
+          <span class="text-2xl block mb-1.5">👀</span>
+          <span class="text-xs text-black/70 dark:text-white/70">看远处</span>
+        </button>
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('check')">
+          <span class="text-2xl block mb-1.5">🔍</span>
+          <span class="text-xs text-black/70 dark:text-white/70">刷新实时</span>
+        </button>
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('complain')">
+          <span class="text-2xl block mb-1.5">😤</span>
+          <span class="text-xs text-black/70 dark:text-white/70">吐槽</span>
+        </button>
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('walk')">
+          <span class="text-2xl block mb-1.5">🚶</span>
+          <span class="text-xs text-black/70 dark:text-white/70">走一站</span>
+        </button>
+        <button class="bus-action-btn group bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doBusAction('taxi')">
+          <span class="text-2xl block mb-1.5">🚕</span>
+          <span class="text-xs text-black/70 dark:text-white/70">打车走</span>
+        </button>
+      </div>
+
+      <!-- 统计 -->
+      <div class="grid grid-cols-3 gap-2.5 mb-5">
+        <div class="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center">
+          <div id="statWait" class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xs text-black/50 dark:text-white/50 mt-0.5">已等(分钟)</div>
+        </div>
+        <div class="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center">
+          <div id="statBuses" class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xs text-black/50 dark:text-white/50 mt-0.5">错过的车</div>
+        </div>
+        <div class="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center">
+          <div id="statEvents" class="text-xl font-bold text-black dark:text-white">0</div>
+          <div class="text-xs text-black/50 dark:text-white/50 mt-0.5">发生的事</div>
+        </div>
+      </div>
+
+      <button class="mx-auto block bg-transparent border border-black/10 dark:border-white/10 text-black/50 dark:text-white/50 py-2 px-5 rounded-lg cursor-pointer text-xs transition-all hover:border-red-500 hover:text-red-500" onclick="resetBus()">🔄 放弃等待（重来）</button>
+    </div>
+  </div>
+</MainGridLayout>
+
+<style>
+  @keyframes roadScroll { to { transform: translateX(-40px); } }
+  @keyframes rainFall { 0% { transform: translateY(-20px); opacity: 1; } 100% { transform: translateY(180px); opacity: 0; } }
+  @keyframes eventPop { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  .event-card { animation: eventPop 0.4s ease; }
+  .rain-drop { position: absolute; color: rgba(255,255,255,0.4); font-size: 14px; animation: rainFall 0.8s linear infinite; }
+  .bus-action-btn.disabled { opacity: 0.35; pointer-events: none; }
+  .scene-raining { background: linear-gradient(135deg, #636e72, #74b9ff) !important; }
+  .scene-sunny { background: linear-gradient(135deg, #f9ca24, #f0932b) !important; }
+  .scene-night { background: linear-gradient(135deg, #2c3e50, #1a1a2e) !important; }
+  :global(.dark) .scene-raining { background: linear-gradient(135deg, #4a5568, #2d3748) !important; }
+  :global(.dark) .scene-sunny { background: linear-gradient(135deg, #744210, #5a3e1b) !important; }
+  :global(.dark) .scene-night { background: linear-gradient(135deg, #1a202c, #0d1117) !important; }
+  .bus-on-road.stopped { left: 50% !important; transform: translateY(-50%) translateX(-50%) !important; transition: left 0.5s ease !important; }
+  .bus-on-road.arriving { left: calc(100% + 50px) !important; }
+</style>
+
+<script>
+(function() {
+  var state = {
+    eta: 150, waited: 0, patience: 80, missedBuses: 0, eventCount: 0,
+    running: true, weather: 'sunny', busComing: false, walkUsed: false
+  };
+
+  var stopNames = ['西门站', '图书馆站', '食堂站', '体育馆站', '南门站', '科技园站'];
+  var weatherTypes = ['sunny', 'raining', 'night'];
+  var weatherIcons = { sunny: '☀️', raining: '🌧️', night: '🌙' };
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function formatTime(secs) {
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function updateUI() {
+    var el = function(id) { return document.getElementById(id); };
+    el('busEta').textContent = formatTime(state.eta);
+    el('patienceBar').style.width = state.patience + '%';
+    el('statWait').textContent = Math.floor(state.waited / 60);
+    el('statBuses').textContent = state.missedBuses;
+    el('statEvents').textContent = state.eventCount;
+
+    var emoji, tip;
+    if (state.patience >= 70) { emoji = '😊'; tip = '状态良好，再等等也没关系'; }
+    else if (state.patience >= 50) { emoji = '😐'; tip = '有点不耐烦了……'; }
+    else if (state.patience >= 30) { emoji = '😤'; tip = '怎么还没来！'; }
+    else if (state.patience >= 10) { emoji = '🤬'; tip = '我要疯了！！！'; }
+    else { emoji = '💀'; tip = '耐心已耗尽，你变成了一块石头'; }
+    el('patienceEmoji').textContent = emoji;
+    el('patienceTip').textContent = tip;
+
+    if (state.patience <= 0 && state.running) {
+      state.running = false;
+      el('busStatus').textContent = '💀 你已经变成了站牌的一部分。游戏结束。';
+      disableButtons();
+    }
+  }
+
+  function disableButtons() {
+    document.querySelectorAll('.bus-action-btn').forEach(function(b) { b.classList.add('disabled'); });
+  }
+
+  function enableButtons() {
+    document.querySelectorAll('.bus-action-btn').forEach(function(b) { b.classList.remove('disabled'); });
+  }
+
+  function showEvent(icon, title, desc) {
+    state.eventCount++;
+    var area = document.getElementById('eventArea');
+    area.innerHTML = '<div class="event-card bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10 p-5 text-center">' +
+      '<div class="text-2xl mb-2">' + icon + '</div>' +
+      '<div class="text-sm font-semibold text-black dark:text-white mb-1.5">' + title + '</div>' +
+      '<div class="text-xs text-black/60 dark:text-white/60 leading-relaxed">' + desc + '</div></div>';
+    updateUI();
+  }
+
+  function changeWeather() {
+    state.weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+    var top = document.getElementById('sceneTop');
+    top.className = top.className.replace(/scene-\w+/g, '').trim();
+    top.classList.add('scene-' + state.weather);
+    document.getElementById('weatherIcon').textContent = weatherIcons[state.weather];
+    var rain = document.getElementById('rainDrops');
+    rain.innerHTML = '';
+    if (state.weather === 'raining') {
+      for (var i = 0; i < 20; i++) {
+        var drop = document.createElement('span');
+        drop.className = 'rain-drop';
+        drop.textContent = '💧';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.animationDelay = Math.random() * 0.8 + 's';
+        rain.appendChild(drop);
+      }
+    }
+  }
+
+  function busArrives() {
+    state.running = false;
+    var bus = document.getElementById('busOnRoad');
+    bus.classList.add('stopped');
+    document.getElementById('busStatus').textContent = '🚌 公交到站了！快上车！';
+    setTimeout(function() {
+      showEvent('🎉', '恭喜上车！',
+        '你等了 ' + Math.floor(state.waited / 60) + ' 分钟，错过了 ' + state.missedBuses + ' 辆车。终于可以离开了……吗？');
+    }, 2000);
+  }
+
+  function busPasses() {
+    state.missedBuses++;
+    state.patience = clamp(state.patience - 15, 0, 100);
+    var bus = document.getElementById('busOnRoad');
+    bus.classList.remove('stopped');
+    bus.classList.add('arriving');
+    showEvent('🚌', '车来了！但是……', '这辆车太挤了，门都没开就走了。你看着它远去，内心毫无波澜（并不）。');
+    setTimeout(function() {
+      bus.classList.remove('arriving');
+      state.eta = 120 + Math.floor(Math.random() * 180);
+      state.busComing = false;
+      updateUI();
+    }, 2500);
+  }
+
+  function mainTimerTick() {
+    if (!state.running) return;
+    state.waited++;
+    state.eta = Math.max(0, state.eta - 1);
+    if (state.waited % 10 === 0) { state.patience = clamp(state.patience - 1, 0, 100); }
+    if (state.eta <= 0 && !state.busComing) {
+      state.busComing = true;
+      var bus = document.getElementById('busOnRoad');
+      bus.classList.add('arriving');
+      document.getElementById('busStatus').textContent = '🚌 公交来了！';
+      setTimeout(function() {
+        if (Math.random() < 0.4) { busArrives(); } else { busPasses(); }
+      }, 2000);
+    }
+    updateUI();
+  }
+
+  var mainTimer = setInterval(mainTimerTick, 1000);
+
+  function scheduleEvent() {
+    setTimeout(function() {
+      if (!state.running) return;
+      var events = [
+        { icon: '👵', title: '老奶奶问路', desc: '一位老奶奶问你XX路怎么走，你耐心地指了路。耐心+5', patience: 5 },
+        { icon: '🦟', title: '蚊子攻击', desc: '一只蚊子在你耳边嗡嗡叫，怎么也赶不走。耐心-5', patience: -5 },
+        { icon: '📱', title: '手机快没电了', desc: '你看了眼手机，电量15%。焦虑感上升。耐心-8', patience: -8 },
+        { icon: '🍦', title: '冰淇淋车', desc: '旁边来了辆冰淇淋车，你买了一根。耐心+10', patience: 10 },
+        { icon: '🌧️', title: '突然下雨', desc: '你没带伞，只能躲在站牌下。耐心-10', patience: -10 },
+        { icon: '🐕', title: '可爱小狗', desc: '一只金毛跑过来蹭你。你摸了摸它。耐心+15', patience: 15 },
+        { icon: '📢', title: '广播响了', desc: '"尊敬的乘客，本线路因故延误……" 耐心-12', patience: -12 },
+        { icon: '🎵', title: '街头艺人', desc: '旁边有人在弹吉他，还挺好听。耐心+8', patience: 8 },
+        { icon: '👀', title: '对视尴尬', desc: '你和对面等车的人对视了，双方迅速移开目光。耐心-3', patience: -3 },
+        { icon: '🌤️', title: '天气变好了', desc: '太阳出来了，心情好了一点。耐心+5', patience: 5 }
+      ];
+      var evt = events[Math.floor(Math.random() * events.length)];
+      state.patience = clamp(state.patience + evt.patience, 0, 100);
+      showEvent(evt.icon, evt.title, evt.desc);
+      scheduleEvent();
+    }, 15000 + Math.random() * 15000);
+  }
+  scheduleEvent();
+
+  setInterval(function() { if (state.running) changeWeather(); }, 60000);
+
+  window.doBusAction = function(type) {
+    if (!state.running) return;
+    switch(type) {
+      case 'phone':
+        state.patience = clamp(state.patience + 8, 0, 100);
+        var phoneMsgs = ['你刷了会儿短视频，时间过得快了些', '你回了几条消息', '你看了看朋友圈，没啥新鲜事', '你玩了一局消消乐'];
+        showEvent('📱', '看手机', phoneMsgs[Math.floor(Math.random() * phoneMsgs.length)]);
+        break;
+      case 'look':
+        state.patience = clamp(state.patience + 5, 0, 100);
+        showEvent('👀', '看远处', '你望向远方，试图寻找那辆传说中的公交车。远处好像有个影子……不，那是广告牌。');
+        break;
+      case 'check':
+        state.patience = clamp(state.patience - 3, 0, 100);
+        var newEta = Math.max(state.eta - 30, 60);
+        if (Math.random() < 0.3) {
+          newEta = state.eta + 60 + Math.floor(Math.random() * 120);
+          showEvent('😤', '刷新实时', '刷新后预计时间从 ' + formatTime(state.eta) + ' 变成了 ' + formatTime(newEta) + '……你为什么要刷新！');
+        } else {
+          showEvent('🔍', '刷新实时', '预计还有 ' + formatTime(newEta) + ' 到站。嗯，至少它还在路上。');
+        }
+        state.eta = newEta;
+        break;
+      case 'complain':
+        state.patience = clamp(state.patience + 3, 0, 100);
+        var complaints = ['你小声骂了一句', '你发了条朋友圈吐槽', '你在心里默默问候了公交公司', '你深呼吸，告诉自己要冷静'];
+        showEvent('😤', '吐槽', complaints[Math.floor(Math.random() * complaints.length)]);
+        break;
+      case 'walk':
+        if (state.walkUsed) {
+          showEvent('🚶', '走一站', '你已经走过一站了，再走就到家了……那还等什么公交？');
+          return;
+        }
+        state.walkUsed = true;
+        state.eta = Math.max(state.eta - 60, 30);
+        var nextStop = stopNames[(stopNames.indexOf(document.getElementById('stopName').textContent) + 1) % stopNames.length];
+        document.getElementById('stopName').textContent = nextStop;
+        showEvent('🚶', '走一站', '你决定走到下一站「' + nextStop + '」，说不定能快一点。ETA 减少了1分钟。');
+        break;
+      case 'taxi':
+        state.running = false;
+        disableButtons();
+        showEvent('🚕', '打车走', '你放弃了等待，叫了辆出租车。花了35块，但终于解脱了。你等了 ' + Math.floor(state.waited / 60) + ' 分钟。');
+        document.getElementById('busStatus').textContent = '你已打车离开。但你心里知道，下次还是会等公交的。';
+        break;
+    }
+    updateUI();
+  };
+
+  window.resetBus = function() {
+    clearInterval(mainTimer);
+    state = { eta: 150, waited: 0, patience: 80, missedBuses: 0, eventCount: 0, running: true, weather: 'sunny', busComing: false, walkUsed: false };
+    document.getElementById('eventArea').innerHTML = '';
+    document.getElementById('busStatus').textContent = '公交即将到达，请耐心等待...';
+    var bus = document.getElementById('busOnRoad');
+    bus.classList.remove('arriving', 'stopped');
+    document.getElementById('stopName').textContent = '西门站';
+    changeWeather();
+    enableButtons();
+    updateUI();
+    mainTimer = setInterval(mainTimerTick, 1000);
+    scheduleEvent();
+  };
+
+  changeWeather();
+  updateUI();
+})();
+</script>
