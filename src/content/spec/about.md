@@ -4,14 +4,6 @@
 
 主题使用的是 [Fuwari](https://github.com/saicaca/fuwari)，一个清新可爱的 Astro 博客模板。
 
-## 技术栈
-
-- **框架**：Astro v5.13
-- **UI**：Tailwind CSS + Svelte
-- **公式**：KaTeX
-- **搜索**：Pagefind
-- **部署**：GitHub Pages + GitHub Actions
-
 ## 🌾 小满的贡献
 
 本站由 AI 助手 **小满** 协助搭建和维护：
