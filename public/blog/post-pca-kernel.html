@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCA 与核 PCA 分析 - InvernoFrio的博客</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']],
+        tags: 'ams'
+      },
+      chtml: { scale: 1.0 }
+    };
+  </script>
+  <script src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
+  <link rel="alternate" type="application/rss+xml" title="InvernoFrio的博客 RSS" href="feed.xml">
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PCA 与核 PCA 分析 - InvernoFrio的博客">
+  <meta property="og:description" content="从线性 PCA 到核方法，推导协方差矩阵特征分解与核技巧的完整过程。">
+  <meta property="og:url" content="http://REDACTED_IP/post-pca-kernel.html">
+  <meta property="og:image" content="http://REDACTED_IP/img/cover.jpg">
+  <meta property="og:site_name" content="InvernoFrio的博客">
+  <meta name="twitter:card" content="summary_large_image"></head>
+<body>
+  <!-- 模糊导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌾 InvernoFrio的博客</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="categories.html">分类</a></li>
+        <li><a href="archive.html">归档</a></li>
+        <li><a href="search.html">搜索</a></li>
+        <li><a href="tags.html">标签</a></li>
+        <li><a href="friend-links.html">友链</a></li>
+        <li><a href="toolbox.html">百宝箱</a></li>
+        <li><a href="contact.html">联系</a></li>
+      </ul>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 封面区域 -->
+  <header class="cover" >
+    <div class="cover-content">
+      <h1 class="cover-title" id="articleTitle" data-title="PCA 与核 PCA 分析"></h1>
+      <p class="cover-subtitle">2026年3月17日 · 矩阵优化与计算</p>
+    </div>
+  </header>
+
+  <main class="container article-page">
+    <div class="article-layout">
+      <!-- 左侧目录 -->
+      <aside class="toc-sidebar" id="toc">
+        <div class="toc-card">
+          <h4>目录</h4>
+          <nav class="toc-nav">
+            <a href="#sec-pca" class="toc-link active">1. PCA 回顾</a>
+            <a href="#sec-kpca" class="toc-link">2. 核 PCA</a>
+            <a href="#sec-kernel" class="toc-link sub">2.1 核函数</a>
+            <a href="#sec-projection" class="toc-link sub">2.2 投影的计算</a>
+            <a href="#sec-centering" class="toc-link sub">2.3 中心化</a>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- 右侧文章 -->
+      <article class="article-card">
+        <a href="index.html" class="back-link">← 返回首页</a>
+        <div class="article-meta">
+          <a href="category-matrix.html" class="tag">矩阵优化与计算</a>
+          <span class="meta-date">2026年3月17日</span>
+        </div>
+
+        <div class="article-body">
+
+          <!-- ===== Section 1: PCA ===== -->
+          <h2 id="sec-pca">1. PCA 回顾</h2>
+          <p>在主成分分析（PCA）中，我们寻找投影后方差最大的方向。该方向恰好对应样本协方差矩阵的最大特征值对应的特征向量。</p>
+
+          <p>首先介绍协方差矩阵。对于两个向量 $x, y$，协方差定义为</p>
+          $$\operatorname{Var}(x, y) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y}),$$
+          <p>用于衡量两者的相关性。</p>
+
+          <p>考虑中心化后的数据矩阵 $X \in \mathbb{R}^{m \times d}$（$m$ 个样本，$d$ 个特征）。则协方差矩阵为</p>
+          $$C = \frac{1}{n} X^{\mathsf T} X,$$
+          <p>其中 $C_{ij} = \operatorname{Var}(X_i, X_j)$。它将 $d$ 个特征在 $m$ 个样本上的相关信息浓缩在一起。</p>
+
+          <p>设单位向量 $u \in \mathbb{R}^{d}$（$\|u\|=1$），样本在 $u$ 方向上的投影为 $v = X u$。投影后的样本方差为 $\operatorname{Var}(X u) = u^{\mathsf T} C u$。我们要最大化该方差：</p>
+          $$\max_{\|u\|=1} u^{\mathsf T} C u.$$
+
+          <p>构造拉格朗日函数：</p>
+          $$L(u, \lambda) = u^{\mathsf T} C u - \lambda (u^{\mathsf T} u - 1).$$
+          <p>对 $u$ 求导并令其为零：</p>
+          $$\frac{\partial L}{\partial u} = 2 C u - 2 \lambda u = 0 \quad \Longrightarrow \quad C u = \lambda u.$$
+          <p>代入目标函数得 $u^{\mathsf T} C u = u^{\mathsf T} (\lambda u) = \lambda$。因此，最大方差等于最大特征值，且最优投影方向为对应的特征向量。</p>
+
+          <p>因此，只需求出协方差矩阵 $\frac{1}{n} X^{\mathsf T} X$ 的特征值和特征向量，取最大特征值对应的特征向量作为第一主成分方向，次大特征值对应第二主成分方向，以此类推。</p>
+
+          <!-- ===== Section 2: Kernel PCA ===== -->
+          <h2 id="sec-kpca">2. 核 PCA</h2>
+          <p>PCA 是线性方法，在处理非线性问题时表现不佳。因此引入映射</p>
+          $$\Phi: \mathbb{R}^d \to \mathcal{F},\quad \boldsymbol{x} \mapsto \Phi(\boldsymbol{x}),$$
+          <p>将原始数据映射到高维（甚至无穷维）特征空间 $\mathcal{F}$。</p>
+
+          <p>设原始数据矩阵 $X = (\boldsymbol{x}_1, \boldsymbol{x}_2, \dots, \boldsymbol{x}_n)^{\mathsf T} \in \mathbb{R}^{n \times d}$，映射后的数据矩阵为 $\Phi(X) = (\Phi(\boldsymbol{x}_1), \dots, \Phi(\boldsymbol{x}_n))^{\mathsf T}$（每行是一个样本的像）。在特征空间中，协方差矩阵为</p>
+          $$C_{\Phi} = \frac{1}{n} \Phi(X)^{\mathsf T} \Phi(X) = \frac{1}{n} \sum_{i=1}^n \Phi(\boldsymbol{x}_i) \Phi(\boldsymbol{x}_i)^{\mathsf T}.$$
+          <p>我们希望求 $C_{\Phi}$ 的特征向量 $\boldsymbol{u}$，满足</p>
+          $$C_{\Phi} \boldsymbol{u} = \lambda \boldsymbol{u}.$$
+          <p>由于 $\Phi$ 可能维数很高甚至无穷，直接计算不可行。由上式可知，所有特征向量 $\boldsymbol{u}$ 均可表示为 $\Phi(\boldsymbol{x}_i)$ 的线性组合（因为 $C_{\Phi}$ 的每一列都是 $\Phi(\boldsymbol{x}_i)$ 的线性组合）。设</p>
+          $$\boldsymbol{u} = \sum_{i=1}^n \alpha_i \Phi(\boldsymbol{x}_i) = \Phi(X)^{\mathsf T} \boldsymbol{\alpha},$$
+          <p>其中 $\boldsymbol{\alpha} = (\alpha_1, \dots, \alpha_n)^{\mathsf T}$。将其代入特征方程：</p>
+          $$\frac{1}{n} \sum_{i=1}^n \Phi(\boldsymbol{x}_i) \Phi(\boldsymbol{x}_i)^{\mathsf T} \left( \sum_{j=1}^n \alpha_j \Phi(\boldsymbol{x}_j) \right) = \lambda \sum_{k=1}^n \alpha_k \Phi(\boldsymbol{x}_k).$$
+          <p>两边左乘 $\Phi(\boldsymbol{x}_l)^{\mathsf T}$，得</p>
+          $$\frac{1}{n} \sum_{i=1}^n \sum_{j=1}^n \alpha_j \left( \Phi(\boldsymbol{x}_l)^{\mathsf T} \Phi(\boldsymbol{x}_i) \right) \left( \Phi(\boldsymbol{x}_i)^{\mathsf T} \Phi(\boldsymbol{x}_j) \right) = \lambda \sum_{k=1}^n \alpha_k \Phi(\boldsymbol{x}_l)^{\mathsf T} \Phi(\boldsymbol{x}_k).$$
+          <p>定义核矩阵 $K \in \mathbb{R}^{n \times n}$，其元素 $K_{ij} = \Phi(\boldsymbol{x}_i)^{\mathsf T} \Phi(\boldsymbol{x}_j) = k(\boldsymbol{x}_i, \boldsymbol{x}_j)$。上式可写为</p>
+          $$\frac{1}{n} K K \boldsymbol{\alpha} = \lambda K \boldsymbol{\alpha}.$$
+          <p>通常假设 $K$ 可逆（或正定），两边左乘 $K^{-1}$ 得</p>
+          $$\frac{1}{n} K \boldsymbol{\alpha} = \lambda \boldsymbol{\alpha} \quad \Longrightarrow \quad K \boldsymbol{\alpha} = n \lambda \boldsymbol{\alpha}.$$
+          <p>因此，$\boldsymbol{\alpha}$ 是核矩阵 $K$ 的特征向量，对应的特征值为 $n\lambda$。求出 $\boldsymbol{\alpha}$ 后，即可得到特征空间中的主方向 $\boldsymbol{u} = \sum_i \alpha_i \Phi(\boldsymbol{x}_i)$，但 $\boldsymbol{u}$ 本身无法显式写出（除非映射已知），我们只需知道样本在 $\boldsymbol{u}$ 上的投影即可。</p>
+
+          <!-- ===== 2.1 核函数 ===== -->
+          <h2 id="sec-kernel">2.1 核函数</h2>
+          <p>核技巧的核心是直接定义核函数 $k(\boldsymbol{x}, \boldsymbol{y}) = \Phi(\boldsymbol{x})^{\mathsf T} \Phi(\boldsymbol{y})$，而不必显式构造映射 $\Phi$。常用核函数有：</p>
+          <ul>
+            <li><strong>多项式核：</strong>$k(\boldsymbol{x}, \boldsymbol{y}) = (\boldsymbol{x}^{\mathsf T} \boldsymbol{y} + c)^d$，$d \in \mathbb{N}$，$c \ge 0$。</li>
+            <li><strong>高斯核（RBF）：</strong>$k(\boldsymbol{x}, \boldsymbol{y}) = \exp\left( -\frac{\|\boldsymbol{x} - \boldsymbol{y}\|^2}{2\sigma^2} \right)$，$\sigma > 0$。</li>
+            <li><strong>Sigmoid 核：</strong>$k(\boldsymbol{x}, \boldsymbol{y}) = \tanh(a \boldsymbol{x}^{\mathsf T} \boldsymbol{y} + r)$。</li>
+          </ul>
+
+          <!-- ===== 2.2 投影的计算 ===== -->
+          <h2 id="sec-projection">2.2 投影的计算</h2>
+          <p>我们希望投影方向 $\boldsymbol{u}$ 满足归一化条件 $\|\boldsymbol{u}\| = 1$。由 $\boldsymbol{u} = \sum_i \alpha_i \Phi(\boldsymbol{x}_i)$ 得</p>
+          $$\|\boldsymbol{u}\|^2 = \boldsymbol{u}^{\mathsf T} \boldsymbol{u} = \sum_{i,j} \alpha_i \alpha_j \Phi(\boldsymbol{x}_i)^{\mathsf T} \Phi(\boldsymbol{x}_j) = \boldsymbol{\alpha}^{\mathsf T} K \boldsymbol{\alpha}.$$
+          <p>若 $\boldsymbol{\alpha}$ 是 $K$ 的特征向量且特征值为 $\lambda_K$（即 $K \boldsymbol{\alpha} = \lambda_K \boldsymbol{\alpha}$），则</p>
+          $$\|\boldsymbol{u}\|^2 = \boldsymbol{\alpha}^{\mathsf T} (\lambda_K \boldsymbol{\alpha}) = \lambda_K \|\boldsymbol{\alpha}\|^2.$$
+          <p>为使 $\|\boldsymbol{u}\| = 1$，可取 $\|\boldsymbol{\alpha}\|^2 = 1 / \lambda_K$，即令 $\boldsymbol{\alpha} = \frac{1}{\sqrt{\lambda_K}} \boldsymbol{\alpha}_{\text{raw}}$，其中 $\boldsymbol{\alpha}_{\text{raw}}$ 是单位特征向量（$\|\boldsymbol{\alpha}_{\text{raw}}\|=1$）。</p>
+
+          <p>样本 $\boldsymbol{x}$ 在 $\boldsymbol{u}$ 上的投影为</p>
+          $$\langle \Phi(\boldsymbol{x}), \boldsymbol{u} \rangle = \sum_{i=1}^n \alpha_i \langle \Phi(\boldsymbol{x}), \Phi(\boldsymbol{x}_i) \rangle = \sum_{i=1}^n \alpha_i k(\boldsymbol{x}, \boldsymbol{x}_i).$$
+          <p>对于训练集，所有样本在某个主成分上的投影值构成向量</p>
+          $$\boldsymbol{y} = K \boldsymbol{\alpha}.$$
+          <p>若选取前 $m$ 个主成分，对应的特征向量矩阵为 $U_m = (\boldsymbol{\alpha}_1, \dots, \boldsymbol{\alpha}_m) \in \mathbb{R}^{n \times m}$，特征值对角矩阵为 $\Lambda_m = \operatorname{diag}(\lambda_1, \dots, \lambda_m)$（其中 $\lambda_j$ 是 $K$ 的特征值），则训练样本在 $m$ 个主成分上的投影矩阵为</p>
+          $$Y = K U_m \Lambda_m^{-1/2} \in \mathbb{R}^{n \times m}.$$
+
+          <!-- ===== 2.3 中心化 ===== -->
+          <h2 id="sec-centering">2.3 中心化</h2>
+          <p>在实际应用中，我们需要在特征空间中对数据进行中心化，即用</p>
+          $$\tilde{\Phi}(\boldsymbol{x}) = \Phi(\boldsymbol{x}) - \frac{1}{n} \sum_{i=1}^n \Phi(\boldsymbol{x}_i)$$
+          <p>代替 $\Phi(\boldsymbol{x})$。相应地，核矩阵也需要中心化。记 $\boldsymbol{1}_n$ 为全1列向量，$I_n$ 为 $n \times n$ 单位矩阵，定义矩阵</p>
+          $$H = I_n - \frac{1}{n} \boldsymbol{1}_n \boldsymbol{1}_n^{\mathsf T},$$
+          <p>则中心化后的核矩阵为</p>
+          $$\tilde{K} = H K H.$$
+          <p>具体推导如下：设 $\Phi = (\Phi(\boldsymbol{x}_1), \dots, \Phi(\boldsymbol{x}_n))^{\mathsf T}$（每行是一个样本的像），中心化后的数据矩阵为</p>
+          $$\tilde{\Phi} = \Phi - \frac{1}{n} \boldsymbol{1}_n \boldsymbol{1}_n^{\mathsf T} \Phi = H \Phi.$$
+          <p>则中心化核矩阵</p>
+          $$\tilde{K} = \tilde{\Phi} \tilde{\Phi}^{\mathsf T} = (H \Phi)(H \Phi)^{\mathsf T} = H (\Phi \Phi^{\mathsf T}) H = H K H.$$
+          <p>因此，实际计算时，我们首先构造原始核矩阵 $K$，然后用 $H K H$ 代替 $K$，再对其进行特征分解，后续步骤不变。中心化后的核矩阵保证了特征空间中的数据均值为零，从而正确进行 PCA。</p>
+
+        </div>
+
+        <!-- 评论区 -->
+        <div class="comment-section" style="border-top:1px solid var(--border);margin-top:32px;padding-top:32px;">
+          <h3 style="font-family:'Noto Serif SC',serif;font-size:1.2rem;color:var(--text-primary);margin-bottom:20px;">💬 留言</h3>
+          <script src="https://giscus.app/client.js"
+            data-repo="invernofrio/blog-comments"
+            data-repo-id="R_kgDORxB1kg"
+            data-category="General"
+            data-category-id="DIC_kwDORxB1ks4C5TOQ"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+          </script>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 InvernoFrio的博客 · 用 Nginx 构建 · <a href="http://REDACTED_IP">主站</a></p>
+    </div>
+  </footer>
+  <script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章标题 - InvernoFrio的博客</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']],
+        tags: 'ams',
+        packages: { '[+]': ['ams', 'boldsymbol'] }
+      },
+      chtml: { scale: 1.0 }
+    };
+  </script>
+  <script src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">📝 InvernoFrio的博客</a>
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="contact.html">联系</a></li>
+      </ul>
+      <button class="menu-toggle" aria-label="菜单">☰</button>
+    </div>
+  </nav>
+
+  <main class="container article-page">
+    <div class="article-layout">
+      <!-- 左侧目录 -->
+      <aside class="toc-sidebar" id="toc">
+        <div class="toc-card">
+          <h4>目录</h4>
+          <nav class="toc-nav">
+            <a href="#sec-1" class="toc-link active">1. 小节一</a>
+            <a href="#sec-2" class="toc-link">2. 小节二</a>
+            <a href="#sec-2-1" class="toc-link sub">2.1 子小节</a>
+            <a href="#sec-3" class="toc-link">3. 小节三</a>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- 右侧文章 -->
+      <article class="article-card">
+        <a href="index.html" class="back-link">← 返回首页</a>
+        <div class="article-meta">
+          <a href="category-xxx.html" class="tag">分类名</a>
+          <span class="meta-date">2026年X月X日</span>
+        </div>
+        <h1>文章标题</h1>
+
+        <div class="article-body">
+
+          <h2 id="sec-1">1. 小节一</h2>
+          <p>正文内容。支持行内公式 $E = mc^2$ 和块级公式：</p>
+          $$\sum_{i=1}^n x_i = n \bar{x}$$
+
+          <h2 id="sec-2">2. 小节二</h2>
+          <p>正文内容。</p>
+
+          <h2 id="sec-2-1">2.1 子小节</h2>
+          <p>支持图片：</p>
+          <img src="img/example.png" alt="示例图片" class="article-img">
+
+          <h2 id="sec-3">3. 小节三</h2>
+          <p>正文内容。</p>
+
+        </div>
+
+        <!-- 评论区 -->
+        <div class="comment-section" style="border-top:1px solid var(--border);margin-top:32px;padding-top:32px;">
+          <h3 style="font-family:'Noto Serif SC',serif;font-size:1.2rem;color:var(--text-primary);margin-bottom:20px;">💬 留言</h3>
+          <script src="https://giscus.app/client.js"
+            data-repo="invernofrio/blog-comments"
+            data-repo-id="R_kgDORxB1kg"
+            data-category="General"
+            data-category-id="DIC_kwDORxB1ks4C5TOQ"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+          </script>
+        </div>
+
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 InvernoFrio的博客 · 用 Nginx 构建</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('show');
+    });
+
+    // TOC 高亮联动
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = [];
+    tocLinks.forEach(link => {
+      const id = link.getAttribute('href').replace('#', '');
+      const el = document.getElementById(id);
+      if (el) sections.push({ el, link });
+    });
+
+    function updateToc() {
+      let current = sections[0];
+      for (const s of sections) {
+        if (s.el.getBoundingClientRect().top <= 120) current = s;
+      }
+      tocLinks.forEach(l => l.classList.remove('active'));
+      if (current) current.link.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateToc, { passive: true });
+    updateToc();
+
+    tocLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(link.getAttribute('href').replace('#', ''));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>

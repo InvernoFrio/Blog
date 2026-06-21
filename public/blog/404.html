@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - 页面未找到 | InvernoFrio的博客</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .error-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .error-code {
+      font-family: "Noto Serif SC", serif;
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .error-text {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .error-desc {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+    .error-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .error-btn:hover {
+      background: var(--accent-light);
+      color: #fff;
+      text-decoration: none;
+    }
+  </style>  <link rel="alternate" type="application/rss+xml" title="InvernoFrio的博客 RSS" href="feed.xml">
+</head>
+<body>
+  <!-- 模糊导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌾 InvernoFrio的博客</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="categories.html">分类</a></li>
+        <li><a href="archive.html">归档</a></li>
+        <li><a href="search.html">搜索</a></li>
+        <li><a href="tags.html">标签</a></li>
+        <li><a href="friend-links.html">友链</a></li>
+        <li><a href="toolbox.html">百宝箱</a></li>
+        <li><a href="contact.html">联系</a></li>
+      </ul>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="error-page">
+      <div>
+        <div class="error-code">404</div>
+        <div class="error-text">页面走丢了</div>
+        <p class="error-desc">可能地址输错了，也可能这篇文章还没写出来。<br>不管怎样，回首页看看吧。</p>
+        <a href="index.html" class="error-btn">返回首页 →</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 InvernoFrio · 由 ❤️ 和 ☕ 提供动力</p>
+    </div>
+  </footer>
+
+  <script src="js/common.js"></script>
+</body>
+</html>

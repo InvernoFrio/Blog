@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>搜索 - InvernoFrio的博客</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">  <link rel="alternate" type="application/rss+xml" title="InvernoFrio的博客 RSS" href="feed.xml">
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">🌾 InvernoFrio的博客</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="categories.html">分类</a></li>
+        <li><a href="archive.html">归档</a></li>
+        <li><a href="search.html">搜索</a></li>
+        <li><a href="tags.html">标签</a></li>
+        <li><a href="friend-links.html">友链</a></li>
+        <li><a href="toolbox.html">百宝箱</a></li>
+        <li><a href="contact.html">联系</a></li>
+      </ul>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 封面 -->
+  <header class="cover">
+    <div class="cover-content">
+      <h1 class="cover-title" id="coverTitle" data-title="搜索"></h1>
+      <p class="cover-subtitle">在文章中搜索你感兴趣的内容</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="search-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-page-input" placeholder="输入关键词搜索文章…" autocomplete="off">
+      </div>
+      <div class="search-suggestions" id="searchSuggestions">
+        <p class="search-hint">试试搜索：<span class="suggestion-tag" data-query="摄影">摄影</span>、<span class="suggestion-tag" data-query="矩阵">矩阵</span>、<span class="suggestion-tag" data-query="推荐系统">推荐系统</span>、<span class="suggestion-tag" data-query="算法">算法</span></p>
+      </div>
+      <div id="searchResults" class="posts-list">
+        <p class="search-hint">请输入关键词开始搜索</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 InvernoFrio的博客 · 用 Nginx 构建 · <a href="http://REDACTED_IP">主站</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script>
+    let fuse;
+    let allData = [];
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+
+    fetch('search-data.json')
+      .then(res => res.json())
+      .then(data => {
+        allData = data;
+        fuse = new Fuse(data, {
+          keys: [
+            { name: 'title', weight: 0.4 },
+            { name: 'excerpt', weight: 0.35 },
+            { name: 'category', weight: 0.25 }
+          ],
+          threshold: 0.3,
+          includeScore: true
+        });
+      })
+      .catch(() => {
+        searchResults.innerHTML = '<p class="search-hint">加载文章数据失败</p>';
+      });
+
+    // 搜索建议标签点击
+    document.querySelectorAll('.suggestion-tag').forEach(tag => {
+      tag.style.cursor = 'pointer';
+      tag.style.color = 'var(--link)';
+      tag.style.fontWeight = '600';
+      tag.style.margin = '0 4px';
+      tag.addEventListener('click', () => {
+        const query = tag.dataset.query;
+        searchInput.value = query;
+        performSearch(query);
+      });
+    });
+
+    // 输入搜索
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      performSearch(query);
+    });
+
+    // 回车搜索
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        performSearch(query);
+      }
+    });
+
+    function performSearch(query) {
+      // 隐藏搜索建议
+      if (searchSuggestions) {
+        searchSuggestions.style.display = 'none';
+      }
+
+      if (!query) {
+        // 清空时显示最近文章或空状态
+        if (fuse) {
+          renderResults(allData.slice(0, 6)); // 显示最新6篇
+        } else {
+          searchResults.innerHTML = '<p class="search-hint">请输入关键词开始搜索</p>';
+        }
+        if (searchSuggestions) {
+          searchSuggestions.style.display = 'block';
+        }
+        return;
+      }
+
+      const results = fuse.search(query);
+      renderResults(results.map(r => r.item), query);
+    }
+
+    function renderResults(articles, query) {
+      if (!articles || !articles.length) {
+        searchResults.innerHTML = '<p class="search-hint">没有找到包含「' + (query || '') + '」的文章</p>';
+        return;
+      }
+
+      // 高亮关键词
+      function highlight(text, keyword) {
+        if (!keyword) return text;
+        const regex = new RegExp('(' + keyword + ')', 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+      }
+
+      const categoryMap = { '摄影': 'photography', '矩阵优化与计算': 'matrix' };
+      searchResults.innerHTML = articles.map(a => {
+        const catSlug = categoryMap[a.category] || 'uncategorized';
+        return `
+        <article class="post-card">
+          <a href="category-${catSlug}.html" class="tag">${a.category}</a>
+          <h3><a href="${a.url}">${highlight(a.title, query)}</a></h3>
+          <p class="meta">${a.date}</p>
+          <p class="excerpt">${highlight(a.excerpt, query)}</p>
+          <a href="${a.url}" class="read-more">阅读全文 →</a>
+        </article>`;
+      }).join('');
+    }
+  </script>
+  <style>
+    .search-section {
+      padding: 40px 0 60px;
+    }
+    .search-box {
+      margin-bottom: 32px;
+    }
+    .search-page-input {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-page-input:focus {
+      border-color: var(--link);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    }
+    .search-page-input::placeholder {
+      color: var(--text-secondary);
+    }
+    .search-hint {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 40px 0;
+      font-size: 0.95rem;
+    }
+  </style>
+  <script src="js/common.js"></script>
+</body>
+</html>
