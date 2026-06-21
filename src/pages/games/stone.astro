@@ -1,0 +1,312 @@
+---
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="养一块石头" description="它什么都不需要，但你可以给它一切">
+  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative">
+    <div class="card-base z-10 px-6 sm:px-9 py-6 relative w-full max-w-xl mx-auto">
+
+      <!-- 成就弹窗 -->
+      <div id="achBanner" class="fixed top-20 left-1/2 -translate-x-1/2 -translate-y-5 bg-white dark:bg-[#1e1e2e] border-2 border-amber-400 rounded-xl py-3 px-6 shadow-2xl z-[100] opacity-0 transition-all duration-300 pointer-events-none text-center" style="transform:translateX(-50%) translateY(-20px)">
+        <div id="achIcon" class="text-2xl">🏆</div>
+        <div id="achText" class="text-sm text-black dark:text-white mt-1"></div>
+      </div>
+
+      <!-- 石头场景 -->
+      <div class="bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10 p-6 sm:p-8 text-center mb-6 relative overflow-hidden">
+        <div id="weatherDisplay" class="text-xs text-black/50 dark:text-white/50 mb-2"></div>
+        <div class="w-28 h-4 bg-black/15 dark:bg-white/15 rounded-full mx-auto mb-2 opacity-30"></div>
+        <div id="stoneBody" title="点击抚摸" class="text-7xl leading-none my-2.5 cursor-default select-none inline-block transition-transform duration-300 hover:scale-110">🪨</div>
+        <div id="stoneNameDisplay" class="text-xl font-semibold text-black dark:text-white mt-3 mb-1" style="font-family:'Noto Serif SC',serif">一块无名石头</div>
+        <div id="stoneMood" class="text-sm text-black/60 dark:text-white/60 min-h-[1.4em]">它静静地待在那里</div>
+
+        <div class="grid grid-cols-2 gap-3 mt-5">
+          <div class="bg-black/5 dark:bg-white/5 rounded-lg p-2.5">
+            <div class="text-xs text-black/50 dark:text-white/50 mb-1">❤️ 亲密度</div>
+            <div class="h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden"><div id="barBond" class="h-full rounded-full bg-red-500 transition-[width] duration-500" style="width:0%"></div></div>
+            <div id="valBond" class="text-xs text-black dark:text-white font-semibold mt-0.5">0</div>
+          </div>
+          <div class="bg-black/5 dark:bg-white/5 rounded-lg p-2.5">
+            <div class="text-xs text-black/50 dark:text-white/50 mb-1">😊 心情</div>
+            <div class="h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden"><div id="barMood" class="h-full rounded-full bg-amber-500 transition-[width] duration-500" style="width:50%"></div></div>
+            <div id="valMood" class="text-xs text-black dark:text-white font-semibold mt-0.5">50</div>
+          </div>
+          <div class="bg-black/5 dark:bg-white/5 rounded-lg p-2.5">
+            <div class="text-xs text-black/50 dark:text-white/50 mb-1">✨ 洁净</div>
+            <div class="h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden"><div id="barClean" class="h-full rounded-full bg-blue-500 transition-[width] duration-500" style="width:70%"></div></div>
+            <div id="valClean" class="text-xs text-black dark:text-white font-semibold mt-0.5">70</div>
+          </div>
+          <div class="bg-black/5 dark:bg-white/5 rounded-lg p-2.5">
+            <div class="text-xs text-black/50 dark:text-white/50 mb-1">🌱 相处天数</div>
+            <div class="h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden"><div id="barAge" class="h-full rounded-full bg-green-500 transition-[width] duration-500" style="width:0%"></div></div>
+            <div id="valAge" class="text-xs text-black dark:text-white font-semibold mt-0.5">0 天</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="grid grid-cols-3 gap-2.5 mb-6">
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('pet')">
+          <span class="text-2xl block mb-1.5">🤚</span>
+          <span class="text-xs text-black/70 dark:text-white/70">抚摸</span>
+        </button>
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('clean')">
+          <span class="text-2xl block mb-1.5">🧼</span>
+          <span class="text-xs text-black/70 dark:text-white/70">擦洗</span>
+        </button>
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('sing')">
+          <span class="text-2xl block mb-1.5">🎵</span>
+          <span class="text-xs text-black/70 dark:text-white/70">唱歌</span>
+        </button>
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('talk')">
+          <span class="text-2xl block mb-1.5">💬</span>
+          <span class="text-xs text-black/70 dark:text-white/70">聊天</span>
+        </button>
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('sun')">
+          <span class="text-2xl block mb-1.5">☀️</span>
+          <span class="text-xs text-black/70 dark:text-white/70">晒太阳</span>
+        </button>
+        <button class="stone-action-btn bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3.5 text-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--primary)] active:scale-95" onclick="doAction('name')">
+          <span class="text-2xl block mb-1.5">🏷️</span>
+          <span class="text-xs text-black/70 dark:text-white/70">取名</span>
+        </button>
+      </div>
+
+      <!-- 日志 -->
+      <div class="bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10 p-5 mb-6">
+        <h3 class="text-base font-semibold text-black dark:text-white mb-3" style="font-family:'Noto Serif SC',serif">📖 石头日记</h3>
+        <div id="logEntries" class="max-h-44 overflow-y-auto text-sm text-black/60 dark:text-white/60 leading-relaxed">
+          <div class="py-0.5 border-b border-black/5 dark:border-white/5">你发现了一块石头。它看起来……就是一块石头。</div>
+        </div>
+      </div>
+
+      <button class="mx-auto block bg-transparent border border-black/10 dark:border-white/10 text-black/50 dark:text-white/50 py-2 px-5 rounded-lg cursor-pointer text-xs transition-all hover:border-red-500 hover:text-red-500" onclick="resetGame()">🗑️ 放归自然（重置）</button>
+    </div>
+  </div>
+</MainGridLayout>
+
+<style>
+  @keyframes petBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.15) rotate(-5deg); }
+    60% { transform: scale(0.95) rotate(3deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  #stoneBody.petting { animation: petBounce 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .log-entry { animation: fadeIn 0.3s ease; }
+</style>
+
+<script>
+(function() {
+  var state = {
+    name: '', bond: 0, mood: 50, clean: 70, age: 0, actions: 0, achievements: []
+  };
+
+  var weathers = [
+    { icon: '☀️', text: '阳光明媚', moodBonus: 2 },
+    { icon: '⛅', text: '多云', moodBonus: 0 },
+    { icon: '🌧️', text: '下雨了', moodBonus: -1 },
+    { icon: '🌙', text: '月色温柔', moodBonus: 1 },
+    { icon: '❄️', text: '下雪了', moodBonus: 1 }
+  ];
+  var currentWeather = weathers[0];
+
+  var moodTexts = {
+    high: ['它看起来很开心', '它似乎在微笑', '它精神抖擞', '它充满活力'],
+    mid: ['它静静地待在那里', '它没什么特别的反应', '它在发呆', '它若有所思'],
+    low: ['它看起来有点寂寞', '它似乎不太开心', '它默默地待着', '它好像在叹气']
+  };
+
+  var achievementDefs = [
+    { id: 'first_pet', icon: '🤚', text: '初次抚摸 — 你摸了它', check: function(s) { return s.actions >= 1; } },
+    { id: 'named', icon: '🏷️', text: '有了名字 — 它不再无名', check: function(s) { return s.name !== ''; } },
+    { id: 'bond_50', icon: '❤️', text: '感情升温 — 亲密度达到50', check: function(s) { return s.bond >= 50; } },
+    { id: 'bond_100', icon: '💕', text: '形影不离 — 亲密度达到100', check: function(s) { return s.bond >= 100; } },
+    { id: 'day_7', icon: '📅', text: '一周纪念 — 相处满7天', check: function(s) { return s.age >= 7; } },
+    { id: 'actions_50', icon: '🎯', text: '坚持不懈 — 互动50次', check: function(s) { return s.actions >= 50; } },
+    { id: 'sing_10', icon: '🎤', text: '灵魂歌手 — 唱了10首歌', check: function(s) { return (s.singCount || 0) >= 10; } },
+    { id: 'clean_10', icon: '✨', text: '一尘不染 — 擦洗10次', check: function(s) { return (s.cleanCount || 0) >= 10; } }
+  ];
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function updateUI() {
+    var el = function(id) { return document.getElementById(id); };
+    el('barBond').style.width = Math.min(state.bond, 100) + '%';
+    el('valBond').textContent = state.bond;
+    el('barMood').style.width = state.mood + '%';
+    el('valMood').textContent = state.mood;
+    el('barClean').style.width = state.clean + '%';
+    el('valClean').textContent = state.clean;
+    el('barAge').style.width = Math.min(state.age * 5, 100) + '%';
+    el('valAge').textContent = state.age + ' 天';
+
+    var moodCat = state.mood >= 70 ? 'high' : (state.mood >= 40 ? 'mid' : 'low');
+    var texts = moodTexts[moodCat];
+    el('stoneMood').textContent = texts[Math.floor(Math.random() * texts.length)];
+
+    if (state.name) {
+      el('stoneNameDisplay').textContent = state.name;
+    }
+  }
+
+  function addLog(text) {
+    var el = document.getElementById('logEntries');
+    var entry = document.createElement('div');
+    entry.className = 'log-entry py-0.5 border-b border-black/5 dark:border-white/5';
+    entry.textContent = text;
+    el.insertBefore(entry, el.firstChild);
+    if (el.children.length > 50) el.removeChild(el.lastChild);
+  }
+
+  function showAchievement(ach) {
+    var banner = document.getElementById('achBanner');
+    document.getElementById('achIcon').textContent = ach.icon;
+    document.getElementById('achText').textContent = ach.text;
+    banner.style.opacity = '1';
+    banner.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(function() {
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateX(-50%) translateY(-20px)';
+    }, 3000);
+  }
+
+  function checkAchievements() {
+    achievementDefs.forEach(function(ach) {
+      if (state.achievements.indexOf(ach.id) === -1 && ach.check(state)) {
+        state.achievements.push(ach.id);
+        showAchievement(ach);
+        addLog('🏆 成就解锁: ' + ach.text);
+      }
+    });
+  }
+
+  function petAnimation() {
+    var body = document.getElementById('stoneBody');
+    body.classList.remove('petting');
+    void body.offsetWidth;
+    body.classList.add('petting');
+  }
+
+  function changeWeather() {
+    currentWeather = weathers[Math.floor(Math.random() * weathers.length)];
+    document.getElementById('weatherDisplay').textContent = currentWeather.icon + ' ' + currentWeather.text;
+    state.mood = clamp(state.mood + currentWeather.moodBonus, 0, 100);
+  }
+
+  var dayTimer = setInterval(function() {
+    state.age++;
+    state.clean = clamp(state.clean - 5, 0, 100);
+    state.mood = clamp(state.mood - 3 + (state.bond > 30 ? 2 : 0), 0, 100);
+    changeWeather();
+    updateUI();
+    checkAchievements();
+    addLog('📅 新的一天，今天是第 ' + state.age + ' 天');
+  }, 30000);
+
+  var eventTimer = setInterval(function() {
+    var events = [
+      { text: '一只蝴蝶飞过，石头似乎很感兴趣', mood: 5, bond: 0 },
+      { text: '一阵微风吹过', mood: 2, bond: 0 },
+      { text: '旁边落了一片叶子', mood: 0, bond: 0 },
+      { text: '远处传来鸟叫声', mood: 3, bond: 0 },
+      { text: '阳光照在石头上，暖暖的', mood: 4, bond: 1 }
+    ];
+    var evt = events[Math.floor(Math.random() * events.length)];
+    state.mood = clamp(state.mood + evt.mood, 0, 100);
+    state.bond = clamp(state.bond + evt.bond, 0, 100);
+    addLog(evt.text);
+    updateUI();
+  }, 45000);
+
+  window.doAction = function(type) {
+    state.actions++;
+    petAnimation();
+
+    switch(type) {
+      case 'pet':
+        state.bond = clamp(state.bond + 3, 0, 100);
+        state.mood = clamp(state.mood + 5, 0, 100);
+        var petMsgs = ['你轻轻抚摸了石头', '石头好像很享受', '你摸了摸它，它纹丝不动', '石头传来微微的温热感'];
+        addLog(petMsgs[Math.floor(Math.random() * petMsgs.length)]);
+        break;
+      case 'clean':
+        state.clean = clamp(state.clean + 20, 0, 100);
+        state.bond = clamp(state.bond + 1, 0, 100);
+        state.cleanCount = (state.cleanCount || 0) + 1;
+        addLog('你仔细擦洗了石头，它变得闪闪发亮');
+        break;
+      case 'sing':
+        state.mood = clamp(state.mood + 8, 0, 100);
+        state.bond = clamp(state.bond + 2, 0, 100);
+        state.singCount = (state.singCount || 0) + 1;
+        var songs = ['你唱了一首《小星星》', '你哼了一段不知名的小调', '你唱了一首摇滚，石头纹丝不动', '你轻声唱了首摇篮曲'];
+        addLog(songs[Math.floor(Math.random() * songs.length)]);
+        break;
+      case 'talk':
+        state.bond = clamp(state.bond + 4, 0, 100);
+        state.mood = clamp(state.mood + 3, 0, 100);
+        var talks = ['你跟石头聊了今天的见闻', '你告诉石头你的烦恼', '你跟石头说了个笑话', '你问石头在想什么，它没有回答'];
+        addLog(talks[Math.floor(Math.random() * talks.length)]);
+        break;
+      case 'sun':
+        state.mood = clamp(state.mood + 10, 0, 100);
+        state.bond = clamp(state.bond + 1, 0, 100);
+        addLog('你把石头放在阳光下晒了晒，它暖暖的');
+        break;
+      case 'name':
+        var newName = prompt('给你的石头取个名字：');
+        if (newName && newName.trim()) {
+          state.name = newName.trim();
+          state.bond = clamp(state.bond + 10, 0, 100);
+          addLog('你给石头取名「' + state.name + '」，它好像知道了');
+        }
+        break;
+    }
+
+    updateUI();
+    checkAchievements();
+  };
+
+  window.resetGame = function() {
+    if (!confirm('确定要放归自然吗？所有进度将丢失。')) return;
+    clearInterval(dayTimer);
+    clearInterval(eventTimer);
+    state = { name: '', bond: 0, mood: 50, clean: 70, age: 0, actions: 0, achievements: [] };
+    document.getElementById('stoneNameDisplay').textContent = '一块无名石头';
+    var logEl = document.getElementById('logEntries');
+    logEl.innerHTML = '<div class="py-0.5 border-b border-black/5 dark:border-white/5">你发现了一块石头。它看起来……就是一块石头。</div>';
+    document.getElementById('weatherDisplay').textContent = '';
+    updateUI();
+
+    dayTimer = setInterval(function() {
+      state.age++;
+      state.clean = clamp(state.clean - 5, 0, 100);
+      state.mood = clamp(state.mood - 3 + (state.bond > 30 ? 2 : 0), 0, 100);
+      changeWeather();
+      updateUI();
+      checkAchievements();
+      addLog('📅 新的一天，今天是第 ' + state.age + ' 天');
+    }, 30000);
+
+    eventTimer = setInterval(function() {
+      var events = [
+        { text: '一只蝴蝶飞过，石头似乎很感兴趣', mood: 5, bond: 0 },
+        { text: '一阵微风吹过', mood: 2, bond: 0 },
+        { text: '旁边落了一片叶子', mood: 0, bond: 0 },
+        { text: '远处传来鸟叫声', mood: 3, bond: 0 },
+        { text: '阳光照在石头上，暖暖的', mood: 4, bond: 1 }
+      ];
+      var evt = events[Math.floor(Math.random() * events.length)];
+      state.mood = clamp(state.mood + evt.mood, 0, 100);
+      state.bond = clamp(state.bond + evt.bond, 0, 100);
+      addLog(evt.text);
+      updateUI();
+    }, 45000);
+  };
+
+  changeWeather();
+  updateUI();
+})();
+</script>
