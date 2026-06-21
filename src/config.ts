@@ -38,14 +38,6 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.About,
 		{
-			name: "分类",
-			url: "/categories/",
-		},
-		{
-			name: "标签",
-			url: "/tags/",
-		},
-		{
 			name: "友链",
 			url: "/friend-links/",
 		},
@@ -56,6 +48,10 @@ export const navBarConfig: NavBarConfig = {
 		{
 			name: "游戏",
 			url: "/games/",
+		},
+		{
+			name: "联系",
+			url: "/contact/",
 		},
 		{
 			name: "GitHub",
