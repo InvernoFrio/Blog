@@ -1,0 +1,26 @@
+[
+  {
+    "title": "推荐算法笔记",
+    "date": "2026年4月2日",
+    "category": "矩阵优化与计算",
+    "tags": ["机器学习", "推荐系统", "矩阵分解", "协同过滤"],
+    "excerpt": "协同过滤与矩阵分解的完整推导，包括 SGD、ALS、SVD++ 等方法。",
+    "url": "post-recommendation.html"
+  },
+  {
+    "title": "玄武所昭之春",
+    "date": "2026年3月25日",
+    "category": "摄影",
+    "tags": ["摄影", "南京", "春天"],
+    "excerpt": "玄武湖畔的春天，万物复苏，生机盎然。",
+    "url": "post-xuanwu-spring.html"
+  },
+  {
+    "title": "PCA 与核 PCA 分析",
+    "date": "2026年3月17日",
+    "category": "矩阵优化与计算",
+    "tags": ["机器学习", "数学", "PCA"],
+    "excerpt": "从线性 PCA 到核方法，推导协方差矩阵特征分解与核技巧的完整过程。",
+    "url": "post-pca-kernel.html"
+  }
+]
