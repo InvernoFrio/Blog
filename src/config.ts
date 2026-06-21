@@ -29,7 +29,13 @@ export const siteConfig: SiteConfig = {
 		enable: true,
 		depth: 2,
 	},
-	favicon: [],
+	favicon: [
+		{
+			src: '/favicon.svg',
+			theme: 'light',
+			sizes: 'any',
+		},
+	],
 };
 
 export const navBarConfig: NavBarConfig = {

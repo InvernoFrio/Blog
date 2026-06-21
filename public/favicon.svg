@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90D9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(50,50)">
+    <!-- 第一片叶子 -->
+    <path d="M0,-35 C15,-35 25,-25 25,-10 C25,5 15,15 0,15 C-15,15 -25,5 -25,-10 C-25,-25 -15,-35 0,-35Z" fill="url(#grad)" transform="rotate(0)"/>
+    <!-- 第二片叶子 -->
+    <path d="M0,-35 C15,-35 25,-25 25,-10 C25,5 15,15 0,15 C-15,15 -25,5 -25,-10 C-25,-25 -15,-35 0,-35Z" fill="url(#grad)" transform="rotate(90)"/>
+    <!-- 第三片叶子 -->
+    <path d="M0,-35 C15,-35 25,-25 25,-10 C25,5 15,15 0,15 C-15,15 -25,5 -25,-10 C-25,-25 -15,-35 0,-35Z" fill="url(#grad)" transform="rotate(180)"/>
+    <!-- 第四片叶子 -->
+    <path d="M0,-35 C15,-35 25,-25 25,-10 C25,5 15,15 0,15 C-15,15 -25,5 -25,-10 C-25,-25 -15,-35 0,-35Z" fill="url(#grad)" transform="rotate(270)"/>
+    <!-- 茎 -->
+    <line x1="0" y1="15" x2="0" y2="35" stroke="url(#grad)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
