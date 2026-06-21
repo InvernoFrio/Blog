@@ -412,8 +412,8 @@ function renderMenuScreen(){
   s._getDiff=()=>sd;
   setTimeout(()=>{const t='读个研先',el=document.getElementById('menuTitle');if(!el)return;let i=0;(function tp(){if(i<t.length){el.innerHTML=t.substring(0,i+1)+'<span class="typing-cursor"></span>';i++;setTimeout(tp,150);}else el.innerHTML=t;})();},300);
 }
-function onStartGame(){const d=document.getElementById('menu-screen')._getDiff?document.getElementById('menu-screen')._getDiff():2;startNewGame(d);showScreen('game');renderGameScreen();}
-function onContinueGame(){if(continueGame()){showScreen('game');renderGameScreen();}else alert('存档读取失败。');}
+window.onStartGame = function(){const d=document.getElementById('menu-screen')._getDiff?document.getElementById('menu-screen')._getDiff():2;startNewGame(d);showScreen('game');renderGameScreen();}
+window.onContinueGame = function(){if(continueGame()){showScreen('game');renderGameScreen();}else alert('存档读取失败。');}
 
 function formatEffects(ef){return Object.entries(ef).map(([k,v])=>{const c=v>0?'text-green-600 dark:text-green-400':'text-red-600 dark:text-red-400';return`<span class="${c}">${ATTR_NAMES[k]}${v>0?'+':''}${v}</span>`;}).join(' ');}
 function renderEventCard(c){const tc={info:'',success:'card-success',warning:'card-warning',danger:'card-danger'}[c.type]||'';return`<div class="event-card ${tc}"><div class="card-title">${c.title}</div><div class="card-desc">${c.description}</div></div>`;}
@@ -494,7 +494,7 @@ function renderEndingScreen(ending){
     <div class="flex gap-2.5 justify-center flex-wrap"><button class="btn-action" onclick="onRestartGame()">再来一次</button><button class="btn-action btn-secondary" onclick="window.location.href='/games'">返回百宝箱</button></div>
   </div></div>`;
 }
-function onRestartGame(){deleteSave();showScreen('menu');renderMenuScreen();}
+window.onRestartGame = function(){deleteSave();showScreen('menu');renderMenuScreen();}
 
 // 初始化
 (function init(){
