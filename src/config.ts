@@ -38,22 +38,6 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.About,
 		{
-			name: "友链",
-			url: "/friend-links/",
-		},
-		{
-			name: "百宝箱",
-			url: "/toolbox/",
-		},
-		{
-			name: "游戏",
-			url: "/games/",
-		},
-		{
-			name: "联系",
-			url: "/contact/",
-		},
-		{
 			name: "GitHub",
 			url: "https://github.com/invernofrio",
 			external: true,
