@@ -100,24 +100,36 @@ $$\|\boldsymbol{u}\|^2 = \boldsymbol{\alpha}^{\mathsf T} (\lambda_K \boldsymbol{
 
 样本 $\boldsymbol{x}$ 在 $\boldsymbol{u}$ 上的投影为
 
-$$\text{proj} = \boldsymbol{u}^{\mathsf T} \Phi(\boldsymbol{x}) = \sum_{i=1}^n \alpha_i \Phi(\boldsymbol{x}_i)^{\mathsf T} \Phi(\boldsymbol{x}) = \sum_{i=1}^n \alpha_i k(\boldsymbol{x}_i, \boldsymbol{x}).$$
+$$\langle \Phi(\boldsymbol{x}), \boldsymbol{u} \rangle = \sum_{i=1}^n \alpha_i \langle \Phi(\boldsymbol{x}), \Phi(\boldsymbol{x}_i) \rangle = \sum_{i=1}^n \alpha_i k(\boldsymbol{x}, \boldsymbol{x}_i).$$
 
-这就是核 PCA 的投影公式。我们只需要计算新样本与所有训练样本的核函数值，而不需要知道映射 $\Phi$ 的具体形式。
+对于训练集，所有样本在某个主成分上的投影值构成向量
 
-## 3. 总结
+$$\boldsymbol{y} = K \boldsymbol{\alpha}.$$
 
-核 PCA 通过核技巧将 PCA 扩展到非线性情况，其核心思想是：
+若选取前 $m$ 个主成分，对应的特征向量矩阵为 $U_m = (\boldsymbol{\alpha}_1, \dots, \boldsymbol{\alpha}_m) \in \mathbb{R}^{n \times m}$，特征值对角矩阵为 $\Lambda_m = \operatorname{diag}(\lambda_1, \dots, \lambda_m)$（其中 $\lambda_j$ 是 $K$ 的特征值），则训练样本在 $m$ 个主成分上的投影矩阵为
 
-1. **隐式映射**：通过核函数 $k(\boldsymbol{x}, \boldsymbol{y})$ 隐式地将数据映射到高维特征空间
-2. **核矩阵**：计算核矩阵 $K$ 并求解其特征向量
-3. **投影计算**：利用核函数值计算新样本的投影
+$$Y = K U_m \Lambda_m^{-1/2} \in \mathbb{R}^{n \times m}.$$
 
-核 PCA 的优势在于：
-- 无需显式构造映射 $\Phi$
-- 可以处理非线性可分数据
-- 议算复杂度与样本数 $n$ 相关，与特征维度无关
+### 2.3 中心化
 
-常用核函数的选择：
-- **高斯核**：适用于大多数情况，参数 $\sigma$ 控制核的宽度
-- **多项式核**：适用于多项式可分的数据
-- **Sigmoid核**：类似于神经网络中的激活函数
+在实际应用中，我们需要在特征空间中对数据进行中心化，即用
+
+$$\tilde{\Phi}(\boldsymbol{x}) = \Phi(\boldsymbol{x}) - \frac{1}{n} \sum_{i=1}^n \Phi(\boldsymbol{x}_i)$$
+
+代替 $\Phi(\boldsymbol{x})$。相应地，核矩阵也需要中心化。记 $\boldsymbol{1}_n$ 为全1列向量，$I_n$ 为 $n \times n$ 单位矩阵，定义矩阵
+
+$$H = I_n - \frac{1}{n} \boldsymbol{1}_n \boldsymbol{1}_n^{\mathsf T},$$
+
+则中心化后的核矩阵为
+
+$$\tilde{K} = H K H.$$
+
+具体推导如下：设 $\Phi = (\Phi(\boldsymbol{x}_1), \dots, \Phi(\boldsymbol{x}_n))^{\mathsf T}$（每行是一个样本的像），中心化后的数据矩阵为
+
+$$\tilde{\Phi} = \Phi - \frac{1}{n} \boldsymbol{1}_n \boldsymbol{1}_n^{\mathsf T} \Phi = H \Phi.$$
+
+则中心化核矩阵
+
+$$\tilde{K} = \tilde{\Phi} \tilde{\Phi}^{\mathsf T} = (H \Phi)(H \Phi)^{\mathsf T} = H (\Phi \Phi^{\mathsf T}) H = H K H.$$
+
+因此，实际计算时，我们首先构造原始核矩阵 $K$，然后用 $H K H$ 代替 $K$，再对其进行特征分解，后续步骤不变。中心化后的核矩阵保证了特征空间中的数据均值为零，从而正确进行 PCA。

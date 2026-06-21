@@ -5,47 +5,35 @@ description: 玄武湖畔的春天，万物复苏，生机盎然。
 tags: [摄影, 南京, 玄武湖, 春天]
 category: 摄影
 draft: false
-image: /images/xuanwu-1.jpg
+image: /images/xuanwu/spring-1.jpg
 ---
-
-## 春天的玄武湖
 
 玄武湖畔的春天，万物复苏，生机盎然。
 
-### 晨光初照
+![玄武湖春景 1](/Blog/images/xuanwu/spring-1.jpg)
 
-清晨的玄武湖，薄雾轻笼，远处的紫金山若隐若现。湖面上的荷花还未盛开，但已有几片嫩绿的荷叶浮出水面。
+![玄武湖春景 2](/Blog/images/xuanwu/spring-2.jpg)
 
-### 樱花烂漫
+![玄武湖春景 3](/Blog/images/xuanwu/spring-3.jpg)
 
-沿着湖边漫步，两旁的樱花树正值花期。粉白色的花瓣随风飘落，宛如一场花瓣雨。
+![玄武湖春景 4](/Blog/images/xuanwu/spring-4.jpg)
 
-### 古城墙下
+![玄武湖春景 5](/Blog/images/xuanwu/spring-5.jpg)
 
-古老的城墙在春光中显得格外沧桑。城墙上的爬山虎已经长出了嫩绿的新叶，与灰色的城砖形成鲜明对比。
+![玄武湖春景 6](/Blog/images/xuanwu/spring-6.jpg)
 
-### 湖光山色
+![玄武湖春景 7](/Blog/images/xuanwu/spring-7.jpg)
 
-站在玄武湖畔，远眺紫金山，山色湖光尽收眼底。春天的紫金山，满山翠绿，生机勃勃。
+![玄武湖春景 8](/Blog/images/xuanwu/spring-8.jpg)
 
-## 拍摄心得
+![玄武湖春景 9](/Blog/images/xuanwu/spring-9.jpg)
 
-这组照片拍摄于2026年3月的一个清晨。为了捕捉到最美的光线，我特意起了个大早。
+![玄武湖春景 10](/Blog/images/xuanwu/spring-10.jpg)
 
-拍摄参数：
-- 相机：Sony A7M3
-- 镜头：24-70mm f/2.8
-- 光圈：f/8
-- 快门：1/125s
-- ISO：200
+![玄武湖春景 11](/Blog/images/xuanwu/spring-11.jpg)
 
-后期处理：
-- 轻微调整白平衡，增加暖色调
-- 适当提高对比度和饱和度
-- 裁剪构图，突出主体
+![玄武湖春景 12](/Blog/images/xuanwu/spring-12.jpg)
 
-## 后记
+![玄武湖春景 13](/Blog/images/xuanwu/spring-13.jpg)
 
-春天是南京最美的季节。玄武湖作为南京的"后花园"，每年春天都会吸引大量游客前来赏花踏青。
-
-如果你也喜欢摄影，不妨在春天来南京走走，相信你会有不一样的收获。
+春日的阳光洒在湖面上，波光粼粼，柳枝轻拂，一派江南春色。

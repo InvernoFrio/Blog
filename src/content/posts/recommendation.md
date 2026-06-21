@@ -8,90 +8,121 @@ draft: false
 image: /images/recommendation-cover.jpg
 ---
 
-## 1. 协同过滤概述
+## 1. 问题定义与低秩假设
 
-协同过滤（Collaborative Filtering）是推荐系统中最经典的方法之一，其核心思想是利用用户的历史行为数据来预测用户对未交互物品的偏好。
+给定用户-物品评分矩阵
 
-### 1.1 基于用户的协同过滤
+$$R \in \mathbb{R}^{m \times n},$$
 
-基于用户的协同过滤（User-based CF）通过找到与目标用户兴趣相似的用户群体，然后将这些用户喜欢的物品推荐给目标用户。
+其中 $m$ 为用户数、$n$ 为物品数。实际场景中，$R$ 仅在观测集合
 
-相似度计算方法：
+$$\Omega = \{(u, i) \mid R_{ui}\ \text{已观测}\}$$
 
-- **余弦相似度**：
-$$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} r_{ui} \cdot r_{vi}}{\sqrt{\sum_{i \in I_{uv}} r_{ui}^2} \cdot \sqrt{\sum_{i \in I_{uv}} r_{vi}^2}}$$
+上有值。协同过滤常用低秩假设：
 
-- **皮尔逊相关系数**：
-$$\text{sim}(u, v) = \frac{\sum_{i \in I_{uv}} (r_{ui} - \bar{r}_u)(r_{vi} - \bar{r}_v)}{\sqrt{\sum_{i \in I_{uv}} (r_{ui} - \bar{r}_u)^2} \cdot \sqrt{\sum_{i \in I_{uv}} (r_{vi} - \bar{r}_v)^2}}$$
+$$R \approx P Q^{\top},\quad P \in \mathbb{R}^{m \times k},\ Q \in \mathbb{R}^{n \times k},\ k \ll \min(m, n).$$
 
-### 1.2 基于物品的协同过滤
+其中 $p_u$（$P$ 的第 $u$ 行）是用户潜在向量，$q_i$（$Q$ 的第 $i$ 行）是物品潜在向量。
 
-基于物品的协同过滤（Item-based CF）通过计算物品之间的相似度，然后根据用户历史喜欢的物品推荐相似物品。
+## 2. 矩阵分解目标函数（SVD 思想 + 正则化）
 
-## 2. 矩阵分解
+基础预测模型：
 
-矩阵分解（Matrix Factorization）将用户-物品评分矩阵分解为两个低秩矩阵的乘积，是现代推荐系统的核心技术。
+$$\hat{r}_{ui} = p_u^{\top} q_i.$$
 
-### 2.1 基本模型
+在观测集合上做带 $\ell_2$ 正则的最小二乘：
 
-设评分矩阵 $R \in \mathbb{R}^{m \times n}$，其中 $m$ 为用户数，$n$ 为物品数。矩阵分解的目标是找到两个低秩矩阵 $P \in \mathbb{R}^{m \times k}$ 和 $Q \in \mathbb{R}^{n \times k}$，使得
+$$\min_{P, Q}\ \sum_{(u, i) \in \Omega} \bigl(r_{ui} - p_u^{\top} q_i\bigr)^2 + \lambda \left( \|P\|_F^2 + \|Q\|_F^2 \right).$$
 
-$$R \approx P Q^{\mathsf T}$$
+正则化的作用是抑制参数过大、缓解过拟合，提高在噪声数据上的泛化稳定性。
 
-其中 $k$ 为隐因子维度，通常 $k \ll m, n$。
+## 3. SGD 更新推导
 
-预测评分公式：
+对单个样本 $(u, i)$，记误差
 
-$$\hat{r}_{ui} = p_u^{\mathsf T} q_i = \sum_{f=1}^k p_{uf} \cdot q_{if}$$
+$$e_{ui} = r_{ui} - p_u^{\top} q_i,$$
 
-### 2.2 优化方法
+单样本目标可写为
 
-#### SGD（随机梯度下降）
+$$\ell_{ui} = e_{ui}^2 + \lambda \left( \|p_u\|_2^2 + \|q_i\|_2^2 \right).$$
 
-损失函数：
+### 梯度计算
 
-$$\min_{P, Q} \sum_{(u,i) \in \mathcal{K}} (r_{ui} - p_u^{\mathsf T} q_i)^2 + \lambda (\|p_u\|^2 + \|q_i\|^2)$$
+$$\frac{\partial \ell_{ui}}{\partial p_u} = -2 e_{ui} q_i + 2 \lambda p_u,$$
 
-其中 $\mathcal{K}$ 为已知评分的集合，$\lambda$ 为正则化参数。
+$$\frac{\partial \ell_{ui}}{\partial q_i} = -2 e_{ui} p_u + 2 \lambda q_i.$$
 
-SGD更新规则：
+### 梯度下降更新
 
-$$p_u \leftarrow p_u + \alpha (e_{ui} \cdot q_i - \lambda \cdot p_u)$$
-$$q_i \leftarrow q_i + \alpha (e_{ui} \cdot p_u - \lambda \cdot q_i)$$
+吸收常数 $2$ 到学习率 $\eta$，得
 
-其中 $e_{ui} = r_{ui} - \hat{r}_{ui}$ 为预测误差，$\alpha$ 为学习率。
+$$p_u \leftarrow p_u + \eta \bigl(e_{ui} q_i - \lambda p_u\bigr),$$
 
-#### ALS（交替最小二乘法）
+$$q_i \leftarrow q_i + \eta \bigl(e_{ui} p_u - \lambda q_i\bigr).$$
 
-ALS通过交替固定 $P$ 和 $Q$ 来优化损失函数：
+循环遍历样本，迭代至验证集误差收敛。
 
-1. 固定 $Q$，优化 $P$：
-$$p_u = (Q^{\mathsf T} Q + \lambda I)^{-1} Q^{\mathsf T} r_u$$
+## 4. Biased-SVD 与 SVD++
 
-2. 固定 $P$，优化 $Q$：
-$$q_i = (P^{\mathsf T} P + \lambda I)^{-1} P^{\mathsf T} r_i$$
+### Biased-SVD
 
-### 2.3 SVD++
+考虑全局均值和用户/物品偏置：
 
-SVD++在基本矩阵分解的基础上加入了隐式反馈信息：
+$$\hat{r}_{ui} = \mu + b_u + b_i + p_u^{\top} q_i.$$
 
-$$\hat{r}_{ui} = \mu + b_u + b_i + q_i^{\mathsf T} \left( p_u + |N(u)|^{-1/2} \sum_{j \in N(u)} y_j \right)$$
+其中 $\mu$ 为全局平均分，$b_u, b_i$ 分别表示用户和物品偏置。
 
-其中：
-- $\mu$：全局平均评分
-- $b_u, b_i$：用户和物品的偏置项
-- $N(u)$：用户 $u$ 交互过的物品集合
-- $y_j$：物品 $j$ 的隐式反馈因子
+### SVD++
 
-## 3. 总结
+进一步利用隐式反馈集合 $N(u)$（如点击/浏览/购买）：
 
-推荐系统的核心技术演进：
+$$\hat{r}_{ui} = \mu + b_u + b_i + q_i^{\top} \left( p_u + \frac{1}{\sqrt{|N(u)|}} \sum_{j \in N(u)} y_j \right).$$
 
-1. **传统协同过滤**：基于用户/物品的相似度计算
-2. **矩阵分解**：将评分矩阵分解为低秩矩阵
-3. **深度学习**：使用神经网络学习用户和物品的表示
+其中 $y_j$ 为物品 $j$ 的隐式反馈向量。
 
-矩阵分解方法的优势：
-- 可以处理稀疏的评分矩阵
-- 可以学习到用户和物品的潜在特征
-- 预测精度高，计算效率好
+## 5. 交替最小二乘（ALS）
+
+SGD 是联合更新，ALS 则采用"固定一侧、求解另一侧"的交替策略。目标函数仍为
+
+$$\min_{P, Q}\ \sum_{(u, i) \in \Omega} \bigl(r_{ui} - p_u^{\top} q_i\bigr)^2 + \lambda \left( \|P\|_F^2 + \|Q\|_F^2 \right).$$
+
+### 固定 $Q$，求 $P$（法方程推导）
+
+对某个用户 $u$，设其已评分物品集合为 $\Omega_u$，令
+
+$$Q_u \in \mathbb{R}^{|\Omega_u| \times k}$$
+
+为对应物品因子堆叠矩阵，$r_u \in \mathbb{R}^{|\Omega_u|}$ 为该用户的观测评分向量。则子问题为
+
+$$\min_{p_u}\ \|r_u - Q_u p_u\|_2^2 + \lambda \|p_u\|_2^2.$$
+
+其一阶最优条件为
+
+$$\left( Q_u^{\top} Q_u + \lambda I \right) p_u = Q_u^{\top} r_u.$$
+
+### 固定 $P$，求 $Q$
+
+完全对称地，对每个物品 $i$ 有
+
+$$\left( P_i^{\top} P_i + \lambda I \right) q_i = P_i^{\top} r_i.$$
+
+### ALS 流程
+
+1. 初始化 $P, Q$（小随机数或常数）。
+2. 固定 $Q$，逐个用户求解 $p_u$。
+3. 固定 $P$，逐个物品求解 $q_i$。
+4. 重复步骤 2–3，直到目标函数或验证误差收敛。
+
+由于每个子问题都是凸二次问题并被精确求解，ALS 每一步都不增大目标函数，最终收敛到局部最优点。
+
+## 6. 隐式反馈 ALS（Weighted-ALS）
+
+对隐式反馈（如观看时长、点击次数）常用偏好-置信度建模：
+
+$$p_{ui} = \mathbb{I}[r_{ui} > 0], \qquad c_{ui} = 1 + \alpha r_{ui}.$$
+
+优化问题写为
+
+$$\min_{X, Y} \sum_{u, i} c_{ui} \bigl(p_{ui} - x_u^{\top} y_i\bigr)^2 + \lambda \left( \|X\|_F^2 + \|Y\|_F^2 \right).$$
+
+该模型同样可用 ALS 高效求解，是工业推荐系统中的经典方案。
