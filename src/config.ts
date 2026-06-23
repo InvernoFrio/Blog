@@ -56,6 +56,14 @@ export const navBarConfig: NavBarConfig = {
 			url: "/contact/",
 		},
 		{
+			name: "小满",
+			url: "/chat/",
+		},
+		{
+			name: "状态",
+			url: "/status/",
+		},
+		{
 			name: "GitHub",
 			url: "https://github.com/invernofrio",
 			external: true,
