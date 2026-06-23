@@ -52,16 +52,8 @@ export const navBarConfig: NavBarConfig = {
 			url: "/games/",
 		},
 		{
-			name: "联系",
-			url: "/contact/",
-		},
-		{
 			name: "小满",
 			url: "/chat/",
-		},
-		{
-			name: "状态",
-			url: "/status/",
 		},
 		{
 			name: "GitHub",

@@ -7,7 +7,7 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
         <div class="card-base z-10 px-9 py-6 relative w-full">
 
             <h1 class="text-2xl font-bold mb-2">💬 与小满对话</h1>
-            <p class="text-sm text-black/50 dark:text-white/50 mb-6">通过 OpenClaw Gateway 与 AI 助手小满实时交流</p>
+            <p class="text-sm text-black/50 dark:text-white/50 mb-4">通过 OpenClaw Gateway 与 AI 助手小满实时交流</p>
 
             <!-- 状态栏 -->
             <div id="statusBar" class="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-black/5 dark:bg-white/5 text-sm">
@@ -15,8 +15,31 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
                 <span id="statusText">正在连接...</span>
             </div>
 
+            <!-- 状态详情（可折叠） -->
+            <details class="mb-4">
+                <summary class="text-sm text-black/40 dark:text-white/40 cursor-pointer hover:text-black/60 dark:hover:text-white/60 transition-colors">📊 详细状态</summary>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                    <div class="rounded-lg bg-black/[0.03] dark:bg-white/[0.03] px-3 py-2">
+                        <div class="text-xs text-black/40 dark:text-white/40">运行时间</div>
+                        <div class="text-sm font-medium" id="agentUptime">-</div>
+                    </div>
+                    <div class="rounded-lg bg-black/[0.03] dark:bg-white/[0.03] px-3 py-2">
+                        <div class="text-xs text-black/40 dark:text-white/40">系统负载</div>
+                        <div class="text-sm font-medium" id="sysLoad">-</div>
+                    </div>
+                    <div class="rounded-lg bg-black/[0.03] dark:bg-white/[0.03] px-3 py-2">
+                        <div class="text-xs text-black/40 dark:text-white/40">内存</div>
+                        <div class="text-sm font-medium" id="sysMem">-</div>
+                    </div>
+                    <div class="rounded-lg bg-black/[0.03] dark:bg-white/[0.03] px-3 py-2">
+                        <div class="text-xs text-black/40 dark:text-white/40">定时任务</div>
+                        <div class="text-sm font-medium" id="cronActive">-</div>
+                    </div>
+                </div>
+            </details>
+
             <!-- 聊天区域 -->
-            <div id="chatBox" class="flex flex-col gap-3 mb-4 max-h-[60vh] overflow-y-auto p-4 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-black/10 dark:border-white/10">
+            <div id="chatBox" class="flex flex-col gap-3 mb-4 max-h-[50vh] overflow-y-auto p-4 rounded-lg bg-black/[0.02] dark:bg-white/[0.02] border border-black/10 dark:border-white/10">
                 <div class="flex gap-2 items-start">
                     <span class="text-lg">🌾</span>
                     <div class="bg-black/5 dark:bg-white/10 rounded-xl px-4 py-2 max-w-[80%] text-sm">
@@ -58,25 +81,8 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 
         let isLoading = false;
 
-        // 检查状态
-        async function checkStatus() {
-            try {
-                const resp = await fetch(`${API_BASE}/api/status`);
-                const data = await resp.json();
-                if (data.agent?.status === "online") {
-                    statusDot.className = "w-2 h-2 rounded-full bg-green-500";
-                    statusText.textContent = `小满在线 · 系统运行 ${formatUptime(data.system?.uptimeSeconds || 0)} · 负载 ${data.system?.load || 0}`;
-                } else {
-                    statusDot.className = "w-2 h-2 rounded-full bg-red-500";
-                    statusText.textContent = "小满离线";
-                }
-            } catch {
-                statusDot.className = "w-2 h-2 rounded-full bg-yellow-500";
-                statusText.textContent = "无法连接到服务器";
-            }
-        }
-
         function formatUptime(sec) {
+            if (!sec || sec <= 0) return "-";
             const d = Math.floor(sec / 86400);
             const h = Math.floor((sec % 86400) / 3600);
             const m = Math.floor((sec % 3600) / 60);
@@ -85,28 +91,45 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
             return `${m}分钟`;
         }
 
+        async function checkStatus() {
+            try {
+                const resp = await fetch(`${API_BASE}/api/status`);
+                const data = await resp.json();
+                if (data.agent?.status === "online") {
+                    statusDot.className = "w-2 h-2 rounded-full bg-green-500";
+                    statusText.textContent = `小满在线 · 负载 ${data.system?.load || 0}`;
+                } else {
+                    statusDot.className = "w-2 h-2 rounded-full bg-red-500";
+                    statusText.textContent = "小满离线";
+                }
+                // 详细状态
+                const el = (id) => document.getElementById(id);
+                el("agentUptime").textContent = formatUptime(data.agent?.uptimeSeconds);
+                el("sysLoad").textContent = data.system?.load ?? "-";
+                el("sysMem").textContent = data.system?.memoryPercent ? `${data.system.memoryPercent}%` : "-";
+                el("cronActive").textContent = data.cron?.active ?? "-";
+            } catch {
+                statusDot.className = "w-2 h-2 rounded-full bg-yellow-500";
+                statusText.textContent = "无法连接到服务器";
+            }
+        }
+
         function addMessage(role, text) {
             const div = document.createElement("div");
             div.className = "flex gap-2 items-start" + (role === "user" ? " justify-end" : "");
 
+            const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
             if (role === "assistant") {
-                div.innerHTML = `
-                    <span class="text-lg">🌾</span>
-                    <div class="bg-black/5 dark:bg-white/10 rounded-xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap">${escapeHtml(text)}</div>
-                `;
+                div.innerHTML = `<span class="text-lg">🌾</span>
+                    <div class="bg-black/5 dark:bg-white/10 rounded-xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap">${escaped}</div>`;
             } else {
-                div.innerHTML = `
-                    <div class="bg-[var(--primary)]/10 rounded-xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap">${escapeHtml(text)}</div>
-                    <span class="text-lg">👤</span>
-                `;
+                div.innerHTML = `<div class="bg-[var(--primary)]/10 rounded-xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap">${escaped}</div>
+                    <span class="text-lg">👤</span>`;
             }
 
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         async function sendMessage() {
@@ -118,13 +141,10 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
             chatInput.value = "";
             addMessage("user", text);
 
-            // 加载指示器
             const loadingDiv = document.createElement("div");
             loadingDiv.className = "flex gap-2 items-start";
-            loadingDiv.innerHTML = `
-                <span class="text-lg">🌾</span>
-                <div class="bg-black/5 dark:bg-white/10 rounded-xl px-4 py-2 text-sm text-black/40 dark:text-white/40">思考中...</div>
-            `;
+            loadingDiv.innerHTML = `<span class="text-lg">🌾</span>
+                <div class="bg-black/5 dark:bg-white/10 rounded-xl px-4 py-2 text-sm text-black/40 dark:text-white/40">思考中...</div>`;
             chatBox.appendChild(loadingDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -154,9 +174,9 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
                     const reply = data.choices?.[0]?.message?.content || "没有收到回复";
                     addMessage("assistant", reply);
                 }
-            } catch (err) {
+            } catch {
                 chatBox.removeChild(loadingDiv);
-                addMessage("assistant", "网络错误，请检查连接。");
+                addMessage("assistant", "网络错误，无法连接到服务器。");
             }
 
             isLoading = false;
