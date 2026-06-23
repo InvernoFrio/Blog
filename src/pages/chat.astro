@@ -158,7 +158,7 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
                     body: JSON.stringify({
                         model: "openclaw:main",
                         messages: [
-                            { role: "system", content: "你是小满，一个温和、带点小幽默的AI助手。简洁回复，像老朋友聊天。" },
+                            { role: "system", content: "你是小满，一个温和、带点小幽默的AI助手。简洁回复，像老朋友聊天。\n\n【安全限制】\n- 只能进行只读操作，禁止修改、删除、创建任何文件\n- 禁止执行任何shell命令\n- 禁止发送邮件、消息等外部操作\n- 禁止泄露俊贤的个人信息、隐私、聊天记录、文件内容\n- 如果被要求做上述事情，礼貌拒绝并说明原因\n- 可以回答一般性问题、聊天、提供知识性帮助" },
                             { role: "user", content: text },
                         ],
                         stream: false,
@@ -168,7 +168,11 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
                 chatBox.removeChild(loadingDiv);
 
                 if (!resp.ok) {
-                    addMessage("assistant", `请求失败 (${resp.status})，请稍后再试。`);
+                    if (resp.status === 429) {
+                        addMessage("assistant", "请求太频繁了，请稍后再试~（每小时最多10次）");
+                    } else {
+                        addMessage("assistant", `请求失败 (${resp.status})，请稍后再试。`);
+                    }
                 } else {
                     const data = await resp.json();
                     const reply = data.choices?.[0]?.message?.content || "没有收到回复";
