@@ -68,8 +68,16 @@ const bannerOffsetByPosition = {
 	center: `${BANNER_HEIGHT_EXTEND / 2}vh`,
 	bottom: "0",
 };
-const bannerOffset =
-	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+// 支持 "center XX%" 格式的自定义位置
+const bannerPos = siteConfig.banner.position || "center";
+let bannerOffset;
+if (bannerPos.includes("%")) {
+	const pct = parseInt(bannerPos.match(/(\d+)%/)?.[1] || "50");
+	bannerOffset = `${BANNER_HEIGHT_EXTEND * (1 - pct / 100)}vh`;
+} else {
+	bannerOffset =
+		bannerOffsetByPosition[bannerPos] || `${BANNER_HEIGHT_EXTEND / 2}vh`;
+}
 ---
 
 <!DOCTYPE html>
