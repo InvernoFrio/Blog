@@ -52,10 +52,6 @@ export const navBarConfig: NavBarConfig = {
 			url: "/games/",
 		},
 		{
-			name: "小满",
-			url: "/chat/",
-		},
-		{
 			name: "GitHub",
 			url: "https://github.com/invernofrio",
 			external: true,
