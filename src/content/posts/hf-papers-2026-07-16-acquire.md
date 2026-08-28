@@ -2,7 +2,7 @@
 title: "2026-07-16 智能体知识获取与元认知修复架构"
 published: 2026-07-16
 description: "ACQUIRE框架：通过QA驱动的知识获取，让编码智能体先理解再修复，SWE-bench Verified提升4.4个百分点"
-tags: [知识获取, 元认知, 编码智能体, 软件工程, 知识差距]
+tags: [工具使用, 智能体推理, 认知架构]
 category: 论文阅读
 draft: false
 ---

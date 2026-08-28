@@ -2,7 +2,7 @@
 title: "2026-07-15 结构化元认知与深度推理架构"
 published: 2026-07-15
 description: "提出Deep Reasoning形式语言，通过结构化元认知让LLM智能体在推理时动态构建任务专属scaffold，8B模型超越32B基线"
-tags: [元认知, 推理架构, 智能体scaffold, 深度推理, 认知分解]
+tags: [工具使用, 推理与规划, 认知架构]
 category: 论文阅读
 draft: false
 ---
