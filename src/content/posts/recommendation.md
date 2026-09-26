@@ -2,7 +2,7 @@
 title: 推荐算法笔记
 published: 2026-04-02
 description: 协同过滤与矩阵分解的完整推导，包括 SGD、ALS、SVD++ 等方法。
-tags: [推荐系统, 协同过滤, 矩阵分解]
+tags: [推荐系统, 矩阵方法]
 category: 矩阵优化与计算
 draft: false
 image: /images/recommendation-cover.jpg

@@ -2,7 +2,7 @@
 title: "2026-07-24 程序化记忆驱动长程推理"
 published: 2026-07-24
 description: "PRO-LONG：用代码搜索完整日志，让LLM智能体在长程探索任务中实现无损记忆与高效推理"
-tags: [工具使用, 推理与规划, 智能体推理, 智能体记忆]
+tags: [推理与规划, 记忆, 工具使用]
 category: 论文阅读
 draft: false
 ---

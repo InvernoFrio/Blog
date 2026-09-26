@@ -2,7 +2,7 @@
 title: PCA 与核 PCA 分析
 published: 2026-03-17
 description: 从线性 PCA 到核方法，推导协方差矩阵特征分解与核技巧的完整过程。
-tags: [PCA, 核方法, 机器学习]
+tags: [机器学习, 矩阵方法]
 category: 矩阵优化与计算
 draft: false
 image: /images/cover.jpg

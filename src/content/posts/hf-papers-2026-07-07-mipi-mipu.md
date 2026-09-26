@@ -2,7 +2,7 @@
 title: "2026-07-07 LLM强化学习训练-推理错位与单调推理策略优化"
 published: 2026-07-07
 description: "揭示LLM RL中训练策略优化不等于推理策略改进的目标错位问题，提出MIPI原则与MIPU两步框架实现单调推理策略改进"
-tags: [强化学习]
+tags: [强化学习, 智能体]
 category: 论文阅读
 draft: false
 ---

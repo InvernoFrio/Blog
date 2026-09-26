@@ -2,7 +2,7 @@
 title: "2026-07-12 具身智能体架构自动设计"
 published: 2026-07-12
 description: "AgentCanvas与KDLoop：将架构搜索从文本域迁移到具身智能体，自动优化感知-记忆-规划-动作模块组合"
-tags: [具身智能, 工具使用, 认知架构, 评估与基准]
+tags: [认知架构, 工具使用, 具身智能, 评估与基准]
 category: 论文阅读
 draft: false
 ---

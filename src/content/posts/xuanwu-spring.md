@@ -2,7 +2,7 @@
 title: 玄武所昭之春
 published: 2026-03-25
 description: 玄武湖畔的春天，万物复苏，生机盎然。
-tags: [摄影, 南京, 玄武湖, 春天]
+tags: [生活, 摄影, 玄武湖, 春天]
 category: 摄影
 draft: false
 image: /images/xuanwu/spring-1.jpg
