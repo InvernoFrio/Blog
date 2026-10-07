@@ -88,6 +88,16 @@ All commands are run from the root of the project, from a terminal:
 | `pnpm astro ...`           | Run CLI commands like `astro add`, `astro check`    |
 | `pnpm astro --help`        | Get help using the Astro CLI                        |
 
+## 学习空间
+
+顶栏「学习」进入独立学习区。当前包含 AI Infra 的算子专题，正文存放在 `src/content/learning/ai-infra/operators/`，按 frontmatter 的 `order` 排序，按 `module` 分组。
+
+学习区复用博客的主布局、横幅、主题配色、页脚和返回顶部。入口页保留原模板侧栏；阅读页左侧显示专题文章目录，大屏使用模板的右侧本页目录，窄屏目录折叠显示。学习文章独立于博客归档和 RSS，并加入 Pagefind 搜索索引。学习页采用完整页面导航，确保目录与正文同步初始化。
+
+实验代码位于 `public/learning/operators/`。`python public/learning/operators/cpu_checks.py` 运行标准库参考验证；GPU 实验需要兼容的 NVIDIA CUDA、PyTorch、Triton 环境。CPU 检查不能替代 GPU kernel 的实机验证。
+
+运行 `pnpm build` 后，以 `pnpm test:learning` 检查文章切换、章节锚点、部署路径、公式与下载文件。
+
 ## ✏️ Contributing
 
 Check out the [Contributing Guide](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) for details on how to contribute to this project.

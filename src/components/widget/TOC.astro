@@ -6,9 +6,10 @@ import { url } from "../../utils/url-utils";
 interface Props {
 	class?: string;
 	headings: MarkdownHeading[];
+	forceShow?: boolean;
 }
 
-let { headings = [] } = Astro.props;
+let { headings = [], forceShow = false } = Astro.props;
 
 let minDepth = 10;
 for (const heading of headings) {
@@ -31,7 +32,7 @@ let heading1Count = 1;
 
 const maxLevel = siteConfig.toc.depth;
 ---
-{isPostsRoute &&
+{(isPostsRoute || forceShow) &&
 <table-of-contents class:list={[className, "group"]}>
     {headings.filter((heading) => heading.depth < minDepth + maxLevel).map((heading) =>
             <a href={`#${heading.slug}`} class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl

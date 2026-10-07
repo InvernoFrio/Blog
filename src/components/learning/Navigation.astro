@@ -1,0 +1,29 @@
+---
+import { lessonUrl, type Lesson } from "../../utils/learning-utils";
+import { url } from "../../utils/url-utils";
+interface Props { lessons: Lesson[]; active?: string; }
+const { lessons, active } = Astro.props;
+const modules = [...new Set(lessons.map((lesson) => lesson.data.module))];
+---
+<details class="learning-navigation card-base" open data-learning-navigation data-pagefind-ignore>
+	<summary>专题目录<span aria-hidden="true">⌄</span></summary>
+	<nav aria-label="算子专题文章目录">
+		<a class="learning-course-link" href={url("/learn/ai-infra/")}>AI Infra</a>
+		<p class="learning-topic-name">算子：从原理到实现</p>
+		{modules.map((module) => <section>
+			<h2>{module}</h2>
+			<ol>{lessons.filter((lesson) => lesson.data.module === module).map((lesson) => <li>
+				<a href={lessonUrl(lesson)} aria-current={active === lesson.slug ? "page" : undefined}>
+					<span class="learning-lesson-number">{String(lesson.data.order).padStart(2, "0")}</span>
+					<span>{lesson.data.title}</span>
+				</a>
+			</li>)}</ol>
+		</section>)}
+	</nav>
+</details>
+<script>
+const compact = window.matchMedia("(max-width: 1023px)");
+const update = () => document.querySelectorAll<HTMLDetailsElement>("[data-learning-navigation]").forEach((panel) => { panel.open = !compact.matches; });
+update();
+compact.addEventListener("change", update);
+</script>

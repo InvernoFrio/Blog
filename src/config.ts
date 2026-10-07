@@ -42,6 +42,10 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "学习",
+			url: "/learn/",
+		},
 		LinkPreset.About,
 		{
 			name: "友链",

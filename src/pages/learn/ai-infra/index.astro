@@ -1,0 +1,19 @@
+---
+import LearningLayout from "../../../layouts/LearningLayout.astro";
+import { getOperatorLessons, lessonUrl } from "../../../utils/learning-utils";
+const lessons = await getOperatorLessons();
+---
+<LearningLayout title="AI Infra" description="从算子开始，理解训练与推理系统怎样执行计算、使用内存和分析性能。">
+	<section class="learning-paper card-base text-90">
+		<p class="learning-kicker">学习 / AI Infra</p>
+		<h1>理解计算怎样发生。</h1>
+		<p class="learning-description text-50">模型写成公式，执行时却要面对数据布局、硬件资源和调度开销。先从算子建立这套分析方法，再向训练与推理系统延伸。</p>
+		<a class="learning-topic-card" href={lessonUrl(lessons[0])}>
+			<span class="learning-kicker">专题 01</span>
+			<h2>算子：从原理到实现</h2>
+			<p class="text-50">张量与 stride → 性能模型 → Triton 向量加法 → Softmax → 分块矩阵乘法 → 融合与 FlashAttention → 验证实验。</p>
+			<footer><span>{lessons.length} 篇正文 · 附 CPU 验证与 GPU 实验代码</span><span>从导览开始 →</span></footer>
+		</a>
+		<p class="text-50 mt-6 text-sm leading-7">先修要求：能读懂 Python 循环和数组索引，了解矩阵乘法。GPU 代码以 PyTorch、Triton 和 NVIDIA CUDA 为实验环境；基础推导与 CPU 验证不依赖 GPU。</p>
+	</section>
+</LearningLayout>

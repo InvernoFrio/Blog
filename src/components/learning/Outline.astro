@@ -1,0 +1,54 @@
+---
+import type { MarkdownHeading } from "astro";
+interface Props { headings: MarkdownHeading[]; }
+const { headings } = Astro.props;
+const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+<details class="learning-outline-panel card-base" open data-pagefind-ignore>
+	<summary>本页目录<span aria-hidden="true">⌄</span></summary>
+	<learning-outline>
+		<nav aria-label="本页章节目录">
+			{items.map((heading) => <a href={`#${heading.slug}`} class:list={[{ "learning-outline-sub": heading.depth === 3 }]}>{heading.text}</a>)}
+		</nav>
+	</learning-outline>
+</details>
+<script>
+class LearningOutline extends HTMLElement {
+	private links: HTMLAnchorElement[] = [];
+	private targets: HTMLElement[] = [];
+	private frame = 0;
+	private compact = window.matchMedia("(max-width: 1535px)");
+	private resizePanel = () => {
+		const panel = this.closest("details");
+		if (panel) panel.open = !this.compact.matches;
+	};
+	private update = () => {
+		if (this.frame) return;
+		this.frame = requestAnimationFrame(() => {
+			this.frame = 0;
+			let active = 0;
+			this.targets.forEach((target, index) => { if (target.getBoundingClientRect().top <= 120) active = index; });
+			this.links.forEach((link, index) => { if (index === active) link.setAttribute("aria-current", "location"); else link.removeAttribute("aria-current"); });
+		});
+	};
+	connectedCallback() {
+		this.resizePanel();
+		this.compact.addEventListener("change", this.resizePanel);
+		this.querySelectorAll<HTMLAnchorElement>("a[href^='#']").forEach((link) => {
+			const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+			if (target) { this.links.push(link); this.targets.push(target); }
+		});
+		window.addEventListener("scroll", this.update, { passive: true });
+		window.addEventListener("resize", this.update);
+		this.update();
+	}
+	disconnectedCallback() {
+		this.compact.removeEventListener("change", this.resizePanel);
+		window.removeEventListener("scroll", this.update);
+		window.removeEventListener("resize", this.update);
+		cancelAnimationFrame(this.frame);
+		this.links = []; this.targets = []; this.frame = 0;
+	}
+}
+if (!customElements.get("learning-outline")) customElements.define("learning-outline", LearningOutline);
+</script>
