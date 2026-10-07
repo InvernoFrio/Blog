@@ -2,11 +2,20 @@
 import { getCollection } from "astro:content";
 import Markdown from "../../components/misc/Markdown.astro";
 import LearningLayout from "../../layouts/LearningLayout.astro";
-import { getOperatorLessons, lessonUrl, type Lesson } from "../../utils/learning-utils";
+import {
+	getOperatorLessons,
+	type Lesson,
+	lessonUrl,
+} from "../../utils/learning-utils";
 export async function getStaticPaths() {
-	return (await getCollection("learning")).map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+	return (await getCollection("learning")).map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
 }
-interface Props { entry: Lesson; }
+interface Props {
+	entry: Lesson;
+}
 const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 const lessons = await getOperatorLessons();

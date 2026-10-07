@@ -1,8 +1,13 @@
 ---
 import type { MarkdownHeading } from "astro";
-interface Props { headings: MarkdownHeading[]; }
+
+interface Props {
+	headings: MarkdownHeading[];
+}
 const { headings } = Astro.props;
-const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const items = headings.filter(
+	(heading) => heading.depth === 2 || heading.depth === 3,
+);
 ---
 <details class="learning-outline-panel card-base" open data-pagefind-ignore>
 	<summary>本页目录<span aria-hidden="true">⌄</span></summary>

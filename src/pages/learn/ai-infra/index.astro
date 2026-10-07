@@ -1,6 +1,7 @@
 ---
 import LearningLayout from "../../../layouts/LearningLayout.astro";
 import { getOperatorLessons, lessonUrl } from "../../../utils/learning-utils";
+
 const lessons = await getOperatorLessons();
 ---
 <LearningLayout title="AI Infra" description="从算子开始，理解训练与推理系统怎样执行计算、使用内存和分析性能。">

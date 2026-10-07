@@ -1,7 +1,11 @@
 ---
-import { lessonUrl, type Lesson } from "../../utils/learning-utils";
+import { type Lesson, lessonUrl } from "../../utils/learning-utils";
 import { url } from "../../utils/url-utils";
-interface Props { lessons: Lesson[]; active?: string; }
+
+interface Props {
+	lessons: Lesson[];
+	active?: string;
+}
 const { lessons, active } = Astro.props;
 const modules = [...new Set(lessons.map((lesson) => lesson.data.module))];
 ---

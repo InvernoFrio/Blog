@@ -2,6 +2,7 @@
 import LearningLayout from "../../layouts/LearningLayout.astro";
 import { getOperatorLessons } from "../../utils/learning-utils";
 import { url } from "../../utils/url-utils";
+
 const lessons = await getOperatorLessons();
 ---
 <LearningLayout title="学习空间" description="按专题组织的技术学习笔记、原理推导与实验档案。">
