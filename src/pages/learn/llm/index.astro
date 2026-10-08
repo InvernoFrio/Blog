@@ -1,0 +1,24 @@
+---
+import LearningLayout from "../../../layouts/LearningLayout.astro";
+import {
+	getTopicLessons,
+	lessonUrl,
+	llmTrainingTopic,
+} from "../../../utils/learning-utils";
+
+const lessons = await getTopicLessons(llmTrainingTopic);
+---
+<LearningLayout title="LLM 学习" description="从数学原理与可复现的小模型训练，走向现代大语言模型的预训练与后训练系统。">
+	<section class="learning-paper card-base text-90">
+		<p class="learning-kicker">学习 / LLM</p>
+		<h1>从一个预测，训练语言模型。</h1>
+		<p class="learning-description text-50">理解它优化的是什么，亲手检查梯度，跑通训练与续训，再逐步放大数据、模型与训练系统。</p>
+		<a class="learning-topic-card" href={lessonUrl(lessons[0])}>
+			<span class="learning-kicker">专题 01</span>
+			<h2>从零训练 LLM</h2>
+			<p class="text-50">概率与损失 → 数据与 Tokenizer → Transformer 与梯度 → 训练、评估和生成 → 分布式与后训练 → 企业前沿。</p>
+			<footer><span>{lessons.length} 篇正文 · 数学检查与完整训练实验</span><span>从导览开始 →</span></footer>
+		</a>
+		<p class="text-50 mt-6 text-sm leading-7">先修：Python、矩阵乘法、导数和基本概率；附录提供数学补习与逐步算例。实验从 CPU 小模型开始，代码提供 CUDA 路径；企业部分以截至 2026-10-08 可核实的公开资料为依据。</p>
+	</section>
+</LearningLayout>

@@ -1,0 +1,241 @@
+{
+  "recorded_on": "2026-10-08",
+  "environment": {
+    "os": "Windows",
+    "python": "3.13.11",
+    "torch": "2.8.0+cpu",
+    "device": "cpu",
+    "precision": "float32",
+    "threads": 1
+  },
+  "pretraining": {
+    "torch": "2.8.0+cpu",
+    "python": "3.13.11",
+    "device": "cpu",
+    "config": {
+      "block_size": 64,
+      "width": 64,
+      "heads": 4,
+      "layers": 2,
+      "dropout": 0.1
+    },
+    "training_contract": {
+      "data_sha256": "24f26c299f369e25e1e61b20fc0689acf9a196680d38c4a2b6b36e634b65d982",
+      "sft": false,
+      "batch_size": 8,
+      "accum_steps": 1,
+      "seed": 17,
+      "lr": 0.003,
+      "weight_decay": 0.01,
+      "warmup": 20,
+      "decay_steps": 1000,
+      "clip": 1.0,
+      "amp": "none"
+    },
+    "code_sha256": "2d6718c86b40fa555d7b5a5c2fe5a9283f99d180a765fc1d404921e023ba9fc7",
+    "parameters": 120768,
+    "data_sha256": "24f26c299f369e25e1e61b20fc0689acf9a196680d38c4a2b6b36e634b65d982",
+    "training_documents": 26,
+    "validation_documents": 6,
+    "training_windows": 100,
+    "validation_windows": 24,
+    "initial_validation": {
+      "loss": 5.550217833545664,
+      "perplexity": 257.29359697824674,
+      "tokens": 1251
+    },
+    "final_validation": {
+      "loss": 2.587577789331035,
+      "perplexity": 13.297523160232032,
+      "tokens": 1251
+    },
+    "history": [
+      {
+        "step": 50,
+        "train_batch_loss": 2.984541700762722,
+        "lr": 0.0029937618024814174,
+        "grad_norm_before_clip": 0.41015663743019104,
+        "seen_tokens": 20832,
+        "validation": {
+          "loss": 3.0199442008892885,
+          "perplexity": 20.490148320239275,
+          "tokens": 1251
+        }
+      },
+      {
+        "step": 100,
+        "train_batch_loss": 2.955939629737367,
+        "lr": 0.00295584806510269,
+        "grad_norm_before_clip": 0.7489708065986633,
+        "seen_tokens": 42393,
+        "validation": {
+          "loss": 3.018227702993855,
+          "perplexity": 20.455007192234813,
+          "tokens": 1251
+        }
+      },
+      {
+        "step": 150,
+        "train_batch_loss": 2.694150010454684,
+        "lr": 0.002884457041071347,
+        "grad_norm_before_clip": 0.9456471800804138,
+        "seen_tokens": 63265,
+        "validation": {
+          "loss": 2.7044503069419465,
+          "perplexity": 14.946098665355962,
+          "tokens": 1251
+        }
+      },
+      {
+        "step": 200,
+        "train_batch_loss": 2.4730019114125312,
+        "lr": 0.002781418941603985,
+        "grad_norm_before_clip": 0.7689542770385742,
+        "seen_tokens": 84712,
+        "validation": {
+          "loss": 2.587577789331035,
+          "perplexity": 13.297523160232032,
+          "tokens": 1251
+        }
+      }
+    ],
+    "total_step": 200,
+    "seen_tokens": 84712,
+    "elapsed_seconds": 5.025306499999715,
+    "sft": false
+  },
+  "sft": {
+    "torch": "2.8.0+cpu",
+    "python": "3.13.11",
+    "device": "cpu",
+    "config": {
+      "block_size": 64,
+      "width": 64,
+      "heads": 4,
+      "layers": 2,
+      "dropout": 0.1
+    },
+    "training_contract": {
+      "data_sha256": "38440b74752d86ae62197a82002e0c43ef6f891fefef19bd8a11ca994372630c",
+      "sft": true,
+      "batch_size": 8,
+      "accum_steps": 1,
+      "seed": 17,
+      "lr": 0.001,
+      "weight_decay": 0.01,
+      "warmup": 20,
+      "decay_steps": 1000,
+      "clip": 1.0,
+      "amp": "none"
+    },
+    "code_sha256": "2d6718c86b40fa555d7b5a5c2fe5a9283f99d180a765fc1d404921e023ba9fc7",
+    "parameters": 120768,
+    "data_sha256": "38440b74752d86ae62197a82002e0c43ef6f891fefef19bd8a11ca994372630c",
+    "training_documents": 13,
+    "validation_documents": 3,
+    "training_windows": 13,
+    "validation_windows": 3,
+    "initial_validation": {
+      "loss": 3.026337874563117,
+      "perplexity": 20.621575345164377,
+      "tokens": 38
+    },
+    "final_validation": {
+      "loss": 4.393979524311266,
+      "perplexity": 80.96196887173026,
+      "tokens": 38
+    },
+    "history": [
+      {
+        "step": 50,
+        "train_batch_loss": 1.9998121822581572,
+        "lr": 0.0009979206008271391,
+        "grad_norm_before_clip": 0.9992143511772156,
+        "seen_tokens": 5971,
+        "validation": {
+          "loss": 2.7339593987715873,
+          "perplexity": 15.393716378314531,
+          "tokens": 38
+        }
+      },
+      {
+        "step": 100,
+        "train_batch_loss": 1.308162307739258,
+        "lr": 0.0009852826883675633,
+        "grad_norm_before_clip": 2.6096584796905518,
+        "seen_tokens": 11912,
+        "validation": {
+          "loss": 3.4366173995168587,
+          "perplexity": 31.081643367906516,
+          "tokens": 38
+        }
+      },
+      {
+        "step": 150,
+        "train_batch_loss": 0.8310499122674516,
+        "lr": 0.0009614856803571156,
+        "grad_norm_before_clip": 2.7892367839813232,
+        "seen_tokens": 17829,
+        "validation": {
+          "loss": 3.96576610364412,
+          "perplexity": 52.760674055250306,
+          "tokens": 38
+        }
+      },
+      {
+        "step": 200,
+        "train_batch_loss": 0.4363413181434683,
+        "lr": 0.0009271396472013282,
+        "grad_norm_before_clip": 1.5379478931427002,
+        "seen_tokens": 24091,
+        "validation": {
+          "loss": 4.393979524311266,
+          "perplexity": 80.96196887173026,
+          "tokens": 38
+        }
+      }
+    ],
+    "total_step": 200,
+    "seen_tokens": 24091,
+    "elapsed_seconds": 4.932785599999988,
+    "sft": true
+  },
+  "generation_samples": [
+    {
+      "stage": "base",
+      "seed": 17,
+      "temperature": 0.8,
+      "top_k": 40,
+      "max_generated_bytes": 80,
+      "text": "Learning obres igacenuiaden timly ct atilt on teretdelg oobate s t aten s destrer k G��"
+    },
+    {
+      "stage": "sft",
+      "seed": 17,
+      "temperature": 0.8,
+      "top_k": 40,
+      "max_generated_bytes": 80,
+      "text": "User: Hi\nAssistant: 4."
+    }
+  ],
+  "verification": {
+    "math_float64": "passed",
+    "causality": "passed",
+    "sft_label_boundary": "passed",
+    "exact_resume_6_vs_3_plus_3_with_dropout_and_adam": "passed",
+    "generation_utf8_output": "passed",
+    "two_cpu_processes_file_exchange": "passed",
+    "gloo_ddp_on_this_windows_build": "unsupported gloo device",
+    "four_action_policy_gradient": {
+      "passed": true,
+      "initial_expected_reward": 0.25,
+      "final_expected_reward": 0.9884984654364897
+    }
+  },
+  "notes": [
+    "Original toy corpus, byte tokens, no pretrained model.",
+    "SFT overfits: training batch loss falls while held-out response loss rises.",
+    "File-exchange gradient validation is not a DDP or AllReduce throughput test.",
+    "Elapsed time includes validation/checkpoint writes and concurrent test activity; no GPU performance claim."
+  ]
+}

@@ -4,7 +4,11 @@ import Navigation from "../components/learning/Navigation.astro";
 import Outline from "../components/learning/Outline.astro";
 import SideBar from "../components/widget/SideBar.astro";
 import { siteConfig } from "../config";
-import type { Lesson } from "../utils/learning-utils";
+import {
+	type LearningTopic,
+	type Lesson,
+	learningTopics,
+} from "../utils/learning-utils";
 import { url } from "../utils/url-utils";
 import MainGridLayout from "./MainGridLayout.astro";
 import "../styles/learning.css";
@@ -15,16 +19,28 @@ interface Props {
 	lessons?: Lesson[];
 	active?: string;
 	headings?: MarkdownHeading[];
+	topic?: LearningTopic;
 }
-const { title, description, lessons = [], active, headings = [] } = Astro.props;
-const isCoursePage = Astro.url.pathname.startsWith(url("/learn/ai-infra/"));
+const {
+	title,
+	description,
+	lessons = [],
+	active,
+	headings = [],
+	topic,
+} = Astro.props;
+const course =
+	topic ||
+	learningTopics.find((item) =>
+		Astro.url.pathname.startsWith(url(`/learn/${item.course}/`)),
+	);
 ---
 <MainGridLayout title={title} description={description} headings={headings} learningPage setOGTypeArticle={!!active}>
 	<Fragment slot="sidebar">
 		{lessons.length > 0 ? (
 			<aside id="sidebar" class="learning-sidebar col-span-2 lg:col-span-1 onload-animation">
 				<div class="learning-sidebar-sticky">
-					<Navigation lessons={lessons} active={active} />
+					{topic && <Navigation lessons={lessons} active={active} topic={topic} />}
 				</div>
 			</aside>
 		) : (
@@ -34,9 +50,9 @@ const isCoursePage = Astro.url.pathname.startsWith(url("/learn/ai-infra/"));
 	<a class="learning-skip" href="#learning-article">跳到正文</a>
 	<div class="learning-center">
 		<nav class="learning-breadcrumb card-base text-50" aria-label="当前位置" data-pagefind-ignore>
-			<a class="link" href={url("/learn/")} aria-current={!isCoursePage ? "page" : undefined}>学习</a>
-			{isCoursePage && <><span aria-hidden="true">/</span><a class="link" href={url("/learn/ai-infra/")} aria-current={!active ? "page" : undefined}>AI Infra</a></>}
-			{active && <><span aria-hidden="true">/</span><span>算子</span></>}
+			<a class="link" href={url("/learn/")} aria-current={!course ? "page" : undefined}>学习</a>
+			{course && <><span aria-hidden="true">/</span><a class="link" href={url(`/learn/${course.course}/`)} aria-current={!active ? "page" : undefined}>{course.courseTitle}</a></>}
+			{active && topic && <><span aria-hidden="true">/</span><span>{topic.title}</span></>}
 		</nav>
 		{headings.length > 0 && <div class:list={["learning-inline-outline", { "2xl:hidden": siteConfig.toc.enable }]}><Outline headings={headings} /></div>}
 		<div id="learning-article" tabindex="-1"><slot /></div>

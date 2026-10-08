@@ -1,19 +1,24 @@
 ---
-import { type Lesson, lessonUrl } from "../../utils/learning-utils";
+import {
+	type LearningTopic,
+	type Lesson,
+	lessonUrl,
+} from "../../utils/learning-utils";
 import { url } from "../../utils/url-utils";
 
 interface Props {
 	lessons: Lesson[];
 	active?: string;
+	topic: LearningTopic;
 }
-const { lessons, active } = Astro.props;
+const { lessons, active, topic } = Astro.props;
 const modules = [...new Set(lessons.map((lesson) => lesson.data.module))];
 ---
 <details class="learning-navigation card-base" open data-learning-navigation data-pagefind-ignore>
 	<summary>专题目录<span aria-hidden="true">⌄</span></summary>
-	<nav aria-label="算子专题文章目录">
-		<a class="learning-course-link" href={url("/learn/ai-infra/")}>AI Infra</a>
-		<p class="learning-topic-name">算子：从原理到实现</p>
+	<nav aria-label={`${topic.title}文章目录`} data-learning-topic={`${topic.course}/${topic.topic}`}>
+		<a class="learning-course-link" href={url(`/learn/${topic.course}/`)}>{topic.courseTitle}</a>
+		<p class="learning-topic-name">{topic.title}</p>
 		{modules.map((module) => <section>
 			<h2>{module}</h2>
 			<ol>{lessons.filter((lesson) => lesson.data.module === module).map((lesson) => <li>

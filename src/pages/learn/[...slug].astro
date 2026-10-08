@@ -3,7 +3,8 @@ import { getCollection } from "astro:content";
 import Markdown from "../../components/misc/Markdown.astro";
 import LearningLayout from "../../layouts/LearningLayout.astro";
 import {
-	getOperatorLessons,
+	getLessonTopic,
+	getTopicLessons,
 	type Lesson,
 	lessonUrl,
 } from "../../utils/learning-utils";
@@ -18,15 +19,16 @@ interface Props {
 }
 const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
-const lessons = await getOperatorLessons();
+const topic = getLessonTopic(entry);
+const lessons = await getTopicLessons(topic);
 const index = lessons.findIndex((lesson) => lesson.slug === entry.slug);
 const previous = lessons[index - 1];
 const next = lessons[index + 1];
 ---
-<LearningLayout title={entry.data.title} description={entry.data.description} lessons={lessons} active={entry.slug} headings={headings}>
+<LearningLayout title={entry.data.title} description={entry.data.description} lessons={lessons} active={entry.slug} headings={headings} topic={topic}>
 	<article class="learning-paper card-base text-90" data-pagefind-body>
 		<header>
-			<p class="learning-kicker">AI Infra / 算子 / {entry.data.module}</p>
+			<p class="learning-kicker">{topic.courseTitle} / {topic.title} / {entry.data.module}</p>
 			<h1 data-pagefind-meta="title">{entry.data.title}</h1>
 			<p class="learning-description text-50">{entry.data.description}</p>
 			<div class="learning-meta text-50" data-pagefind-ignore>

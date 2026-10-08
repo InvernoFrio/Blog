@@ -1,15 +1,26 @@
 ---
 import LearningLayout from "../../layouts/LearningLayout.astro";
-import { getOperatorLessons } from "../../utils/learning-utils";
+import {
+	getOperatorLessons,
+	getTopicLessons,
+	llmTrainingTopic,
+} from "../../utils/learning-utils";
 import { url } from "../../utils/url-utils";
 
 const lessons = await getOperatorLessons();
+const llmLessons = await getTopicLessons(llmTrainingTopic);
 ---
 <LearningLayout title="学习空间" description="按专题组织的技术学习笔记、原理推导与实验档案。">
 	<section class="learning-paper card-base text-90">
 		<p class="learning-kicker">学习空间</p>
 		<h1>沿着问题，深入一个专题。</h1>
 		<p class="learning-description text-50">把原理、实现与实验放在一起。每个专题都有明确的学习顺序，也可以从目录跳到眼前需要解决的问题。</p>
+		<a class="learning-topic-card" href={url("/learn/llm/")}>
+			<span class="learning-kicker">模型与训练</span>
+			<h2>LLM</h2>
+			<p class="text-50">从概率、梯度与 Attention 推导开始，亲手训练小型语言模型，再理解数据工程、分布式训练和企业前沿实践。</p>
+			<footer><span>从零训练 LLM · {llmLessons.length} 篇</span><span>进入学习 →</span></footer>
+		</a>
 		<a class="learning-topic-card" href={url("/learn/ai-infra/")}>
 			<span class="learning-kicker">系统与计算</span>
 			<h2>AI Infra</h2>

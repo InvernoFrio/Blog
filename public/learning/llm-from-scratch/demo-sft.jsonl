@@ -1,0 +1,16 @@
+{"prompt":"Hi","response":"Hello."}
+{"prompt":"2+2?","response":"4."}
+{"prompt":"Capital of France?","response":"Paris."}
+{"prompt":"Define a token.","response":"A prediction unit."}
+{"prompt":"Why validate?","response":"Check unseen data."}
+{"prompt":"What is a gradient?","response":"A local derivative."}
+{"prompt":"Name a matrix operation.","response":"Multiplication."}
+{"prompt":"What does EOS mean?","response":"End of sequence."}
+{"prompt":"Why use a mask?","response":"Hide future tokens."}
+{"prompt":"What is a checkpoint?","response":"Saved training state."}
+{"prompt":"What is CPU?","response":"A processor."}
+{"prompt":"Why save a seed?","response":"Track randomness."}
+{"prompt":"你好","response":"你好。"}
+{"prompt":"What is AdamW?","response":"An optimizer."}
+{"prompt":"What does PAD mean?","response":"Padding."}
+{"prompt":"What is softmax?","response":"Normalized weights."}

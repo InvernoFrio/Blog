@@ -1,0 +1,16 @@
+{
+  "minillm.py": "2d6718c86b40fa555d7b5a5c2fe5a9283f99d180a765fc1d404921e023ba9fc7",
+  "math_checks.py": "041859701f96133be0f122ebcff0b6ca426b1fbcdcb6c8713e6b16ce240adcfb",
+  "smoke_test.py": "2f937d7a90ff98cb185f85f234259fa0750d3f3ac9113a109b5eb10e3e25c2d4",
+  "distributed_check.py": "dac2a1c272a298de9700c2d8e0c01700b7c89dcc7ae68e7d2fe00f6b91cb0341",
+  "rl_bandit.py": "20fe0457fd14b4b91c97a7bf3f70ada57298eb3e0fe5c8682d48644a12f0c324",
+  "demo.jsonl": "24f26c299f369e25e1e61b20fc0689acf9a196680d38c4a2b6b36e634b65d982",
+  "demo-sft.jsonl": "38440b74752d86ae62197a82002e0c43ef6f891fefef19bd8a11ca994372630c",
+  "demo-prompt.txt": "1860cd8c97cc9035f33633cd1ed2162ba000d99e2a5f4852eccdb4324c6020a4",
+  "requirements-cpu.txt": "11de65f24c7b25c97987310608a32c03e3000af1fd9f45287825def3ee237afe",
+  "README.md": "f3f773789dfff5b9143b2d83f6246587d8ea4053bd09d56b939fa08f2811e4f4",
+  "LICENSE": "632119543277b7e54ef3a90759682d1c3c6dc7afa27dd2ea0da672d39b93790e",
+  "experiment_results.json": "4ac15ddb4ed0cb00f750ef62b744d2acc6cb0c481e9a45db3e97f8ff080f1518",
+  "validation-curves.svg": "16d6f447b894ae2b24057fc3292f807fce5b46bb93398de929f728e4dc34dba4",
+  "validation-curves.png": "539ba34a42682c39af53eafddbeea20f492c915fe38572ffb174aeb3390cbb10"
+}
