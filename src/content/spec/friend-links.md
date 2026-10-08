@@ -7,6 +7,7 @@
 | 博客名称 | 博客地址 | GitHub |
 |---------|---------|--------|
 | Kimeng | [fqm1149.github.io](https://fqm1149.github.io) | [fqm1149](https://github.com/fqm1149) |
+| tiany1yu | [tiany1yu.github.io](https://tiany1yu.github.io/) | — |
 
 ## 如何添加
 
