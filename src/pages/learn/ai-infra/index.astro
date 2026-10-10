@@ -1,20 +1,40 @@
 ---
 import LearningLayout from "../../../layouts/LearningLayout.astro";
-import { getOperatorLessons, lessonUrl } from "../../../utils/learning-utils";
+import {
+	getOperatorLessons,
+	getTopicLessons,
+	inferenceTopic,
+	infraOverviewTopic,
+	lessonUrl,
+} from "../../../utils/learning-utils";
 
 const lessons = await getOperatorLessons();
+const overviewLessons = await getTopicLessons(infraOverviewTopic);
+const inferenceLessons = await getTopicLessons(inferenceTopic);
 ---
-<LearningLayout title="AI Infra" description="从算子开始，理解训练与推理系统怎样执行计算、使用内存和分析性能。">
+<LearningLayout title="AI Infra" description="先认识 AI 基础设施的全貌，再学习算子、内存、分布式训练与推理服务。">
 	<section class="learning-paper card-base text-90">
 		<p class="learning-kicker">学习 / AI Infra</p>
-		<h1>理解计算怎样发生。</h1>
-		<p class="learning-description text-50">模型写成公式，执行时却要面对数据布局、硬件资源和调度开销。先从算子建立这套分析方法，再向训练与推理系统延伸。</p>
+		<h1>让模型在真实系统里跑起来。</h1>
+		<p class="learning-description text-50">AI Infra 研究怎样组织计算、内存、数据与机器，让模型训练和推理在质量、成本与可靠性约束下高效运行。先看全貌，再从一个具体问题深入。</p>
+		<a class="learning-topic-card" href={lessonUrl(overviewLessons[0])}>
+			<span class="learning-kicker">从这里开始 · 无需先修</span>
+			<h2>总体概览：AI Infra 到底研究什么？</h2>
+			<p class="text-50">沿着模型的训练与上线过程，认识算子与编译、内存、分布式、推理服务、数据与平台。用具体问题理解每一层的作用，并找到自己的学习入口。</p>
+			<footer><span>全景地图 · 问题举例 · 学习路线</span><span>先读总体概览 →</span></footer>
+		</a>
 		<a class="learning-topic-card" href={lessonUrl(lessons[0])}>
 			<span class="learning-kicker">专题 01</span>
 			<h2>算子：从原理到实现</h2>
 			<p class="text-50">张量与 stride → 性能模型 → Triton 向量加法 → Softmax → 分块矩阵乘法 → 融合与 FlashAttention → 验证实验。</p>
 			<footer><span>{lessons.length} 篇正文 · 附 CPU 验证与 GPU 实验代码</span><span>从导览开始 →</span></footer>
 		</a>
-		<p class="text-50 mt-6 text-sm leading-7">先修要求：能读懂 Python 循环和数组索引，了解矩阵乘法。GPU 代码以 PyTorch、Triton 和 NVIDIA CUDA 为实验环境；基础推导与 CPU 验证不依赖 GPU。</p>
+		<a class="learning-topic-card" href={lessonUrl(inferenceLessons[0])}>
+			<span class="learning-kicker">专题 02</span>
+			<h2>LLM 推理：从算子到服务</h2>
+			<p class="text-50">从 Prefill、Decode 与 KV Cache 开始，理解上下文、显存、并发和响应时间之间的关系。后续继续研究分页缓存、批处理与跨机器推理。</p>
+			<footer><span>{inferenceLessons.length} 篇正文 · 附可运行的 CPU 缓存实验</span><span>进入推理专题 →</span></footer>
+		</a>
+		<p class="text-50 mt-6 text-sm leading-7">总体概览无需先修。算子与推理正文需要 Python 数组、矩阵乘法和基础 Attention；GPU 算子实验使用 PyTorch、Triton 与 NVIDIA CUDA，CPU 验证和缓存实验无需 GPU。分布式训练、编译与平台工程的独立专题会沿这张地图继续补充。</p>
 	</section>
 </LearningLayout>

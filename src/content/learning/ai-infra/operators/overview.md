@@ -5,11 +5,13 @@ course: ai-infra
 topic: operators
 module: 学习导览
 order: 0
-updated: 2026-10-08
+updated: 2026-10-10
 prerequisites: [Python 数组与循环, 矩阵乘法]
 ---
 
 ## 为什么从算子开始
+
+如果还不清楚 AI Infra 的研究范围，先读[总体概览：AI Infra 到底研究什么？](../../foundations/overview/)。本专题位于其中的算子与设备执行这一层；完成后，可以继续阅读[LLM 推理：Prefill、Decode 与 KV Cache](../../inference/prefill-decode/)，看看算子的执行怎样影响服务响应。
 
 写下 `y = x + bias` 时，我们描述了输入和输出之间的关系。真正执行它，还要决定哪些线程读取哪些元素、结果写到哪里、需要几次访问内存。算子学习把这些问题放到同一张桌上：先弄清计算语义，再研究硬件怎样完成计算。
 

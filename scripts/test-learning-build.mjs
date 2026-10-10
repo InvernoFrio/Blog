@@ -2,7 +2,12 @@ import assert from "node:assert/strict";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
-const topics = ["ai-infra/operators", "llm/from-scratch"];
+const topics = [
+	"ai-infra/foundations",
+	"ai-infra/operators",
+	"ai-infra/inference",
+	"llm/from-scratch",
+];
 const origin = "https://local.test";
 const home = await readFile("dist/index.html", "utf8");
 function assertTemplateLayout(html) {
@@ -187,6 +192,22 @@ for (const file of ["cpu_checks.py", "kernels.py", "gpu_lab.py"]) {
 		await readFile(`public/learning/operators/${file}`, "utf8"),
 	);
 }
+const infraHome = await readFile("dist/learn/ai-infra/index.html", "utf8");
+for (const route of [
+	"ai-infra/foundations/overview",
+	"ai-infra/operators/overview",
+	"ai-infra/inference/prefill-decode",
+]) {
+	assert(
+		infraHome.includes(`href="/Blog/learn/${route}/"`),
+		`AI Infra landing page must expose its learning entry: ${route}`,
+	);
+}
+assert.deepEqual(
+	await readFile("dist/learning/inference/kv_cache_lab.py"),
+	await readFile("public/learning/inference/kv_cache_lab.py"),
+	"Published inference experiment must match its source",
+);
 console.log(
 	`Learning build checks passed: ${articleCount} articles across ${topics.length} topics, isolated navigation, current-page markers, outline anchors, previous/next links, ${links} local resources, math, downloads, and separate RSS.`,
 );

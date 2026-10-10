@@ -8,11 +8,23 @@ export interface LearningTopic {
 	topic: string;
 	title: string;
 }
+export const infraOverviewTopic: LearningTopic = {
+	course: "ai-infra",
+	courseTitle: "AI Infra",
+	topic: "foundations",
+	title: "总体概览：AI Infra 研究什么",
+};
 export const operatorTopic: LearningTopic = {
 	course: "ai-infra",
 	courseTitle: "AI Infra",
 	topic: "operators",
 	title: "算子：从原理到实现",
+};
+export const inferenceTopic: LearningTopic = {
+	course: "ai-infra",
+	courseTitle: "AI Infra",
+	topic: "inference",
+	title: "LLM 推理：从算子到服务",
 };
 export const llmTrainingTopic: LearningTopic = {
 	course: "llm",
@@ -20,7 +32,12 @@ export const llmTrainingTopic: LearningTopic = {
 	topic: "from-scratch",
 	title: "从零训练 LLM",
 };
-export const learningTopics = [operatorTopic, llmTrainingTopic];
+export const learningTopics = [
+	infraOverviewTopic,
+	operatorTopic,
+	inferenceTopic,
+	llmTrainingTopic,
+];
 export function getLessonTopic(lesson: Lesson) {
 	const topic = learningTopics.find(
 		(item) =>

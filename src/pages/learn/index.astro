@@ -3,12 +3,16 @@ import LearningLayout from "../../layouts/LearningLayout.astro";
 import {
 	getOperatorLessons,
 	getTopicLessons,
+	inferenceTopic,
+	infraOverviewTopic,
 	llmTrainingTopic,
 } from "../../utils/learning-utils";
 import { url } from "../../utils/url-utils";
 
 const lessons = await getOperatorLessons();
 const llmLessons = await getTopicLessons(llmTrainingTopic);
+const overviewLessons = await getTopicLessons(infraOverviewTopic);
+const inferenceLessons = await getTopicLessons(inferenceTopic);
 ---
 <LearningLayout title="学习空间" description="按专题组织的技术学习笔记、原理推导与实验档案。">
 	<section class="learning-paper card-base text-90">
@@ -24,8 +28,8 @@ const llmLessons = await getTopicLessons(llmTrainingTopic);
 		<a class="learning-topic-card" href={url("/learn/ai-infra/")}>
 			<span class="learning-kicker">系统与计算</span>
 			<h2>AI Infra</h2>
-			<p class="text-50">理解模型背后的计算系统，从张量布局、GPU 执行和算子实现开始，建立分析性能的基础。</p>
-			<footer><span>已上线：算子专题 · {lessons.length} 篇</span><span>进入学习 →</span></footer>
+			<p class="text-50">先看 AI 基础设施的总体地图，再从算子与推理实验出发，理解计算、内存、分布式与服务如何共同支撑模型。</p>
+			<footer><span>总体概览 · 算子 · 推理 · {overviewLessons.length + lessons.length + inferenceLessons.length} 篇</span><span>进入学习 →</span></footer>
 		</a>
 	</section>
 </LearningLayout>
